@@ -10,9 +10,7 @@ import "./index.css";
 //@ts-expect-error
 import routes from '~react-pages';
 
-const CONVEX_URL = import.meta.env.VITE_CONVEX_URL! as string;
-console.log(CONVEX_URL);
-const convex = new ConvexReactClient(CONVEX_URL);
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
 
 
@@ -28,7 +26,7 @@ function RouterApp() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider attribute="class">
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <ConvexAuthProvider client={convex}>
           <RouterApp />
         </ConvexAuthProvider>
