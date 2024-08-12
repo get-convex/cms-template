@@ -20,6 +20,10 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
+env:
+  VITE_CONVEX_URL: ${{ vars.ENV_CONTEXT_VAR }}
+
+
 jobs:
   # Single deploy job since we're just deploying
   deploy:
