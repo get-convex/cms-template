@@ -20,8 +20,7 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
-env:
-  VITE_CONVEX_URL: ${{ vars.ENV_CONTEXT_VAR }}
+
 
 
 jobs:
@@ -31,6 +30,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      VITE_CONVEX_URL: ${{ vars.ENV_CONTEXT_VAR }}  
     steps:
       - name: Checkout
         uses: actions/checkout@v4
