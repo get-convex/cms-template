@@ -10,7 +10,9 @@ import "./index.css";
 //@ts-expect-error
 import routes from '~react-pages';
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+const CONVEX_URL = import.meta.env.VITE_CONVEX_URL! as string;
+console.log(CONVEX_URL);
+const convex = new ConvexReactClient(CONVEX_URL);
 
 
 
