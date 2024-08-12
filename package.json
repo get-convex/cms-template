@@ -8,7 +8,7 @@
     "dev:frontend": "vite --open",
     "dev:backend": "convex dev",
     "predev": "convex dev --until-success",
-    "build": "tsc -b && vite build --base=/convex-cms-vite/",
+    "build": "tsc -b && vite build",
     "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
