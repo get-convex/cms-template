@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/cms-demo(.*)",
+      "destination": "/cms-demo"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
