@@ -21,7 +21,7 @@ function RouterApp() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider attribute="class">
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <BrowserRouter basename={import.meta.env.VITE_BASEPATH}>
         <ConvexAuthProvider client={convex}>
           <RouterApp />
         </ConvexAuthProvider>
