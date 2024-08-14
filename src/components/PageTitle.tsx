@@ -7,3 +7,9 @@ export function PageTitle({ title, tagline }:
         </p>}
     </div>)
 }
+
+
+
+export function Message({ text }: { text: string }) {
+    return <p className="container">{text}</p>
+}

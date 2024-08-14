@@ -3,11 +3,8 @@ import { useParams } from "react-router-dom";
 import { api } from "../../../convex/_generated/api";
 import { DisplayPost } from "@/components/Blog/Post";
 import { EditorToolbar } from "@/components/Blog/Edit";
+import { Message } from "@/components/PageTitle";
 
-
-export function Message({ text }: { text: string }) {
-    return <p className="container">{text}</p>
-}
 
 export default () => {
 

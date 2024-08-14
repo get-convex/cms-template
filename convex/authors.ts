@@ -28,9 +28,14 @@ export const byUserId = query({
         userId: v.id("users")
     },
     handler: async (ctx, args) => {
-        return await ctx.db.query("authors")
+        const user = await ctx.db.get(args.userId);
+        if (!user) {
+            throw new Error(`No user found with id ${args.userId}`);
+        }
+        const author = await ctx.db.query("authors")
             .withIndex("by_userId", q => q.eq("userId", args.userId))
             .unique();
+        return { ...author, user };
     }
 })
 

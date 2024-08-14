@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { AdminDashboard } from '@/components/Admin/Dashboard';
+import { AdminDashboard } from '@/components/Dashboard';
 import { Button } from "@/components/ui/button";
 
 export default function AdminOnly() {

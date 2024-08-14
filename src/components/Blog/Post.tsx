@@ -1,33 +1,23 @@
 import { PageTitle } from "../PageTitle";
-import { AvatarIcon } from "@radix-ui/react-icons";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { StyledMarkdown } from "../Markdown";
 import { Link } from "react-router-dom";
+import { AuthorImage } from "../Author";
 
-export type Author = Doc<'users'> | null;
 export interface Post extends Doc<'posts'> {
-    author?: Author;
+    author?: Doc<'users'> | null;
 }
 
-export function AuthorImage({ src }: { src?: string }) {
-    if (src) {
-        return <img alt="Profile image" src={src}
-            className="relative h-10 w-10 rounded-full" />
-    } else {
-        return <AvatarIcon className="relative h-10 w-10" />
-    }
-}
-
-export function Byline({ author, timestamp }: { author: Author, timestamp: number }) {
+export function Byline({ author, timestamp }: { author: Post["author"], timestamp: number }) {
 
     const date = new Date(timestamp).toDateString();
-    const authorSlug = author?.name?.replace(' ', '-');
+    const authorSlug = author?._id;
 
     return (author &&
         <div className="flex items-center gap-2">
             <AuthorImage src={author.image} />
             <div className="flex flex-col">
-                <Link to={`/author/${authorSlug}`}
+                <Link to={`/authors/${authorSlug}`}
                     className="text-sm underline-offset-2 hover:underline">
                     {author.name}
                 </Link>

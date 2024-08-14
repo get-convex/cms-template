@@ -1,10 +1,6 @@
-import type { Doc } from "../../convex/_generated/dataModel";
-import { AuthorImage } from "./Blog/Post";
+import { AuthorImage, type Author } from "./Author";
 import { PageTitle } from "./PageTitle";
 
-export interface Author extends Doc<'authors'> {
-    user: Doc<'users'>
-}
 
 const authorsGridClass = "w-full grid grid-cols-2 items-center gap-2 pb-4"
 export function AdminDashboard({ authors }: { authors?: Author[] }) {
