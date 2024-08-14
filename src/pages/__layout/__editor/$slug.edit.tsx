@@ -1,4 +1,4 @@
-import { Authenticated, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
 import { EditablePost } from "@/components/Blog/Edit";
@@ -34,10 +34,8 @@ export default () => {
 
     const post = postById || postBySlug;
 
-    if (post === undefined) return <Message text="Loading..." />
-    if (post == null) return <Message text="Not found" />
-    return (<Authenticated>
-        <EditablePost post={post} />
-    </Authenticated>)
-};
+    if (post === undefined) return <Message text="Loading..." />;
+    if (post == null) return <Message text="Not found" />;
+    return <EditablePost post={post} />;
+}
 

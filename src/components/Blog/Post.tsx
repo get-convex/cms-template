@@ -9,6 +9,15 @@ export interface Post extends Doc<'posts'> {
     author?: Author;
 }
 
+export function AuthorImage({ src }: { src?: string }) {
+    if (src) {
+        return <img alt="Profile image" src={src}
+            className="relative h-10 w-10 rounded-full" />
+    } else {
+        return <AvatarIcon className="relative h-10 w-10" />
+    }
+}
+
 export function Byline({ author, timestamp }: { author: Author, timestamp: number }) {
 
     const date = new Date(timestamp).toDateString();
@@ -16,9 +25,7 @@ export function Byline({ author, timestamp }: { author: Author, timestamp: numbe
 
     return (author &&
         <div className="flex items-center gap-2">
-            {author.image
-                ? <img alt="Profile image" className="relative h-10 w-10 rounded-full" src={author.image} />
-                : <AvatarIcon className="relative h-10 w-10" />}
+            <AuthorImage src={author.image} />
             <div className="flex flex-col">
                 <Link to={`/author/${authorSlug}`}
                     className="text-sm underline-offset-2 hover:underline">
@@ -80,10 +87,10 @@ export function DisplayPost({ post }: {
     return post && (<article className="container" >
         <div className="mb-4 grid grid-cols-2 items-start gap-2">
             <div className="flex flex-col h-full gap-8">
-                <p><PageTitle title={post.title} />
-                    {post.author &&
-                        <Byline author={post.author} timestamp={post._creationTime || Date.now()} />}
-                </p>
+                <PageTitle title={post.title} />
+                {post.author &&
+                    <Byline author={post.author} timestamp={post._creationTime || Date.now()} />}
+
                 <p className="text-muted-foreground italic">
                     {post.summary}
                 </p>

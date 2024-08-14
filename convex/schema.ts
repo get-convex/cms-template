@@ -31,22 +31,18 @@ export const postsZod = {
   content: z.string(),
   imageUrl: zodOptionalUrl,
   authorId: zid("users"),
-  published: z.boolean(),
+  published: z.boolean(), //TODO make this a timestamp?
   postId: zodSlug // Unchanging copy of original slug, for versioning
-}
-export const postsDefaults = {
-  slug: '',
-  title: '',
-  summary: '',
-  content: '',
-  imageUrl: '',
-  authorId: '',
-  published: false,
-  postId: ''
 }
 export const posts = Table('posts', zodToConvexFields(postsZod))
 
-
+export const authorsZod = {
+  userId: zid("users"),
+  bio: z.optional(z.string()),
+  url: zodOptionalUrl,
+  isAdmin: z.boolean()
+}
+export const authors = Table('authors', zodToConvexFields(authorsZod))
 
 //// Convex DB ////
 export default defineSchema({
@@ -59,6 +55,8 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_slug_published", ["slug", "published"])
     .index("by_postId", ["postId"])
-    .index("by_postId_published", ["postId", "published"]) // get by postId
-    .index("by_published", ["published"]) // get latest posts
+    .index("by_postId_published", ["postId", "published"]) // to get by postId
+    .index("by_published", ["published"]), // to get latest posts
+  authors: authors.table
+    .index("by_userId", ["userId"])
 });

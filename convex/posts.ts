@@ -1,6 +1,5 @@
 import { v } from "convex/values";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { crud } from "convex-helpers/server";
 import { posts } from "./schema";
 import type { Doc } from "./_generated/dataModel";
 
@@ -34,13 +33,6 @@ export const list = query({
     },
 });
 
-
-export const {
-    // Not using the default helper create/update, for versioning
-    read,
-    destroy
-} = crud(posts, query, mutation);
-
 export const getById = query({
     args: {
         id: v.id('posts'),
@@ -48,7 +40,7 @@ export const getById = query({
     },
     handler: async (ctx, args) => {
         const { id, joinAuthor } = args
-        const post = await read(ctx, { id });
+        const post = await ctx.db.get(id);
         if (!post) return null;
         let author;
         if (joinAuthor) {
