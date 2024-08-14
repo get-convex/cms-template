@@ -6,6 +6,13 @@ export const { auth, signIn, signOut, store } = convexAuth({
   providers: [GitHub, Resend],
   callbacks: {
     async redirect(params) {
+      console.log(params);
+      if (!params.redirectTo) {
+        if (!process.env.SITE_URL) {
+          throw new Error("SITE_URL is not set");
+        }
+        return process.env.SITE_URL;
+      }
       const url = new URL(params.redirectTo);
       if (
         [
