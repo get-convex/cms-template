@@ -61,6 +61,7 @@ export function PostPreview({ post }: { post: Post }) {
 
 
 export function PreviewGallery({ posts }: { posts: Post[] }) {
+    if (!posts?.length) return <PageTitle title="No posts yet" />
     const [hero, ...morePosts] = posts;
     return (<div>
         <PostPreview post={hero} />
