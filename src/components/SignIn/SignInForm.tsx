@@ -7,7 +7,6 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
-
 export function SignInForm() {
   const [step, setStep] = useState<"signIn" | "linkSent">("signIn");
 
@@ -47,7 +46,9 @@ export function SignInWithGitHub() {
       className="flex-1"
       variant="outline"
       type="button"
-      onClick={() => void signIn("github")}
+      onClick={() =>
+        void signIn("github", { redirectTo: window.location.href })
+      }
     >
       <GitHubLogoIcon className="mr-2 h-4 w-4" /> GitHub
     </Button>
