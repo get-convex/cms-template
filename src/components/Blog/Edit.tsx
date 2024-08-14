@@ -1,4 +1,4 @@
-import { Authenticated, AuthLoading, Unauthenticated, useMutation, useQuery } from "convex/react";
+import { Authenticated, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useEffect, useState, type ReactNode } from "react";
 import { MarkdownField, TextField } from "@/components/Blog/Inputs";
@@ -34,7 +34,7 @@ export function EditorToolbar({ post, children }: {
 }) {
     return <div className="mb-6">
         <Authenticated>
-            <div className={`w-full p-4 bg-convex-purple border-b`}>
+            <div className={`absolute bottom-0 left-0 z-10 w-full p-4 bg-convex-purple border-b`}>
                 <div className="container">
                     {children
                         ? (<div className="flex grow justify-between items-center">
@@ -54,13 +54,6 @@ export function EditorToolbar({ post, children }: {
                 </div>
             </div>
         </Authenticated>
-        {/* To prevent layout jump when auth loads or user signs out, render an area of the same height */}
-        <Unauthenticated>
-            <div className="w-full p-4" />
-        </Unauthenticated>
-        <AuthLoading>
-            <div className="w-full p-4" />
-        </AuthLoading>
     </div>
 }
 
