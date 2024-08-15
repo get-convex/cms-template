@@ -19,6 +19,9 @@ export const { auth, signIn, signOut, store } = convexAuth({
           new URL(process.env.SITE_URL || process.env.CONVEX_SITE_URL!)
             .hostname,
           "localhost",
+          "www.convex-cms.com",
+          "vite.convex-cms.com",
+          "tanstack.convex-cms.com",
           "convex-cms.com",
           "labs.convex.dev",
         ].includes(url.hostname)
