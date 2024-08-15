@@ -36,13 +36,14 @@ export const postsZod = {
 }
 export const posts = Table('posts', zodToConvexFields(postsZod))
 
-export const authorsZod = {
+export const userProfilesZod = {
   userId: zid("users"),
-  bio: z.optional(z.string()),
+  image: zodOptionalUrl,
   url: zodOptionalUrl,
-  isAdmin: z.boolean()
+  tagline: z.optional(z.string().max(50)),
+  bio: z.optional(z.string().max(300)),
 }
-export const authors = Table('authors', zodToConvexFields(authorsZod))
+export const userProfiles = Table('userProfiles', zodToConvexFields(userProfilesZod));
 
 //// Convex DB ////
 export default defineSchema({
@@ -56,7 +57,8 @@ export default defineSchema({
     .index("by_slug_published", ["slug", "published"])
     .index("by_postId", ["postId"])
     .index("by_postId_published", ["postId", "published"]) // to get by postId
-    .index("by_published", ["published"]), // to get latest posts
-  authors: authors.table
+    .index("by_published", ["published"])  // to get latest posts
+    .index("by_authorId", ["authorId"]),
+  userProfiles: userProfiles.table
     .index("by_userId", ["userId"])
 });
