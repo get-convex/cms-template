@@ -36,29 +36,30 @@ export const postsZod = {
 }
 export const posts = Table('posts', zodToConvexFields(postsZod))
 
-export const userProfilesZod = {
-  userId: zid("users"),
+export const usersZod = {
   image: zodOptionalUrl,
   url: zodOptionalUrl,
   tagline: z.optional(z.string().max(50)),
   bio: z.optional(z.string().max(300)),
+  userId: z.optional(zid('users')),
+  name: z.optional(z.string()),
+  email: z.optional(z.string().email()),
+  emailVerificationTime: z.optional(z.number()),
+  phone: z.optional(z.string()),
+  phoneVerificationTime: z.optional(z.number()),
+  isAnonymous: z.optional(z.boolean()),
 }
-export const userProfiles = Table('userProfiles', zodToConvexFields(userProfilesZod));
+export const users = Table('users', zodToConvexFields(usersZod));
 
 //// Convex DB ////
 export default defineSchema({
   ...authTables,
-  messages: defineTable({
-    userId: v.id("users"),
-    body: v.string(),
-  }),
+  users: users.table,
   posts: posts.table
     .index("by_slug", ["slug"])
     .index("by_slug_published", ["slug", "published"])
     .index("by_postId", ["postId"])
     .index("by_postId_published", ["postId", "published"]) // to get by postId
-    .index("by_published", ["published"])  // to get latest posts
+    .index("by_published", ["published"]) // to get latest posts
     .index("by_authorId", ["authorId"]),
-  userProfiles: userProfiles.table
-    .index("by_userId", ["userId"])
 });

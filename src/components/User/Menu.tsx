@@ -10,20 +10,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { PersonIcon } from "@radix-ui/react-icons";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { SignInDialog } from "./SignIn/SignInDialog";
+import { SignInDialog } from "../SignIn/SignInDialog";
+import { Link } from "react-router-dom";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
-export function AuthedUserMenu() {
-  const user = useQuery(api.users.viewer);
-  const userName = user?.name || user?.email
+export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
+  const userName = user.name || user.email
   return (
     <div className="flex items-center gap-2 text-sm font-medium">
       {userName}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
-            {user?.image
+            {user.image
               ? <img src={user.image} className="rounded-full" />
               : <PersonIcon className="h-5 w-5" />}
             <span className="sr-only">Toggle user menu</span>
@@ -32,6 +33,9 @@ export function AuthedUserMenu() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{userName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuLabel>
+            <Link to={`/users/${user._id}/edit`}>Edit user profile</Link>
+          </DropdownMenuLabel>
           <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
             Theme
             <ThemeToggle />
@@ -51,13 +55,10 @@ function SignOutButton() {
 }
 
 export function UserMenu() {
-  return <>
+  const viewer = useQuery(api.users.viewer)
 
-    <Unauthenticated>
-      <SignInDialog />
-    </Unauthenticated>
-    <Authenticated>
-      <AuthedUserMenu />
-    </Authenticated>
-  </>
+  return (viewer
+    ? <AuthedUserMenu user={viewer} />
+    : <SignInDialog />
+  );
 }

@@ -1,4 +1,4 @@
-import { AuthorImage, type Author } from "./Author";
+import { AuthorImage, type Author } from "./User/Profile";
 import { PageTitle } from "./PageTitle";
 
 

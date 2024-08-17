@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { GetStartedDialog } from "@/components/GetStarted/GetStartedDialog";
 import { Link, Outlet } from "react-router-dom";
-import { UserMenu } from "@/components/UserMenu";
+import { UserMenu } from "@/components/User/Menu";
 import { Toaster } from "@/components/ui/toaster";
 
 
@@ -33,7 +33,7 @@ export default function Layout() {
                     <UserMenu />
                 </nav>
             </header>
-            <main className="flex grow flex-col overflow-scroll">
+            <main className="flex grow flex-col overflow-scroll py-4">
                 <Outlet />
                 <Toaster />
             </main>

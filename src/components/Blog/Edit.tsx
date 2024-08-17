@@ -1,7 +1,7 @@
 import { Authenticated, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useEffect, useState, type ReactNode } from "react";
-import { MarkdownField, TextField } from "@/components/Blog/Inputs";
+import { MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { postsZod } from "../../../convex/schema";
 import { useForm, type SubmitHandler } from "react-hook-form";

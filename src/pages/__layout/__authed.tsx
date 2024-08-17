@@ -1,5 +1,4 @@
-import { useQuery, Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 export default function () {
@@ -12,15 +11,11 @@ export default function () {
             <GoBack />
         </Unauthenticated>
         <Authenticated>
-            <EditorOnly />
+            <Outlet />
         </Authenticated>
     </>
 }
 
-function EditorOnly() {
-    const editor = useQuery(api.authors.viewer);
-    return (editor === null ? <GoBack /> : <Outlet />);
-}
 
 function GoBack() {
     const { pathname } = useLocation();

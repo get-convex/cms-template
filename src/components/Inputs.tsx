@@ -1,7 +1,7 @@
-import { Input } from "../ui/input";
+import { Input } from "./ui/input";
 import type { FieldValues, UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "../ui/form";
-import { Textarea } from "../ui/textarea";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
+import { Textarea } from "./ui/textarea";
 
 
 

@@ -1,6 +1,16 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { auth } from "./auth";
+import { users } from "./schema";
+import { crud } from "convex-helpers/server";
+
+export const {
+  create,
+  read,
+  update,
+  destroy
+} = crud(users, query, mutation);
+
 
 export const viewer = query({
   args: {},
@@ -26,7 +36,7 @@ export const list = query({
     const users = await ctx.db.query('users').collect();
     if (args.includePosts) {
       return await Promise.all(users.map(async u => {
-        const posts = authoredPosts(ctx, { userId: u._id });
+        const posts = await authoredPosts(ctx, { userId: u._id });
         return { ...u, posts }
       }));
     } else {
