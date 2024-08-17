@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
@@ -14,11 +14,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { usersZod } from "../../../convex/schema";
-import { CompactProfile } from "./Profile";
+import { UserProfile } from "./Profile";
 
 export function EditableProfile({ user }: { user: Doc<'users'> }) {
-    const viewer = useQuery(api.users.viewer);
-
     const { toast } = useToast();
     const navigate = useNavigate();
 
@@ -36,6 +34,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
 
     const onReset = () => {
         form.reset(defaultValues);
+        navigate(`/users/${user._id}`)
     };
 
     const onSubmit: SubmitHandler<z.infer<typeof zodSchema>> =
@@ -59,10 +58,6 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
 
     const { isValid, isDirty } = form.formState;
 
-    if (viewer?._id !== user._id) {
-        return <p className="container">You do not have permission to edit this user's profile.</p>
-    }
-
     return (<>
         <EditorToolbar>
             <div className="flex gap-2 items-center">
@@ -74,19 +69,19 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
             </div>
 
             <div className={`flex gap-2 items-center`}>
-                <Button variant="outline" onClick={onReset} disabled={!isDirty}>
-                    Discard changes
+                <Button variant="outline" onClick={onReset}>
+                    {isDirty ? 'Discard' : 'Cancel'}
                 </Button>
 
                 <Button onClick={form.handleSubmit(onSubmit)}
                     disabled={!isValid || !isDirty}>
-                    Save changes
+                    Save
                 </Button>
             </div>
         </EditorToolbar>
         <div className="container my-8" >
             {previewing
-                ? <CompactProfile user={user} />
+                ? <UserProfile user={user} />
                 : <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} >
                         <TextField name="name" form={form} />

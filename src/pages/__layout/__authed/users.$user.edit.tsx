@@ -17,6 +17,7 @@ export default () => {
     if (user === undefined || viewer === undefined) return <Message text="Loading..." />
     if (user == null) return <Message text="Not found" />
     if (viewer === null || (viewer._id !== user._id)) {
+        // Should never get here, but just in case
         return <Message text="You do not have permission to edit this user's profile." />
     }
 

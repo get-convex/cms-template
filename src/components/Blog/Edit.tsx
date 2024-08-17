@@ -62,7 +62,7 @@ export function EditablePost({ post }: { post: Post | null }) {
     const navigate = useNavigate();
 
     const [previewing, setPreviewing] = useState(false);
-    const [_, setVersionId] = useState(post?._id);
+    const [versionId, setVersionId] = useState(post?._id);
 
     const viewer = useQuery(api.users.viewer);
 
@@ -95,12 +95,19 @@ export function EditablePost({ post }: { post: Post | null }) {
 
     const onReset = () => {
         form.reset(defaultValues);
+        const back = post ? `/${post.slug}?v=${versionId}` : `/`;
+        navigate(back);
     };
 
 
 
     const onSubmit: (published: boolean) => SubmitHandler<z.infer<typeof zodSchema>> =
         (published) => async (data) => {
+            if (!data.postId) {
+                // Unless there is already a postId set,
+                // copy the slug as postId (for history)
+                data.postId = data.slug;
+            }
             try {
                 const result = await update({ ...data, published });
                 if (!result) throw new Error('Update fn returned no document')
@@ -141,11 +148,11 @@ export function EditablePost({ post }: { post: Post | null }) {
                 disabled={isDirty} />}
 
             <div className={`flex gap-2 items-center`}>
-                <Button variant="outline" onClick={onReset} disabled={!isDirty}>
-                    Reset
+                <Button variant="secondary" onClick={onReset}>
+                    {isDirty ? 'Discard' : 'Cancel'}
                 </Button>
 
-                <Button variant="secondary"
+                <Button variant="outline"
                     onClick={form.handleSubmit(onSubmit(false))}
                     disabled={!isValid || !isDirty}>
                     Save draft
