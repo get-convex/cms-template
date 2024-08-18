@@ -9,12 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { PersonIcon } from "@radix-ui/react-icons";
 import { SignInDialog } from "../SignIn/SignInDialog";
 import { Link } from "react-router-dom";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { UserImage } from "./Profile";
 
 export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
   const userName = user.name || user.email
@@ -23,10 +23,8 @@ export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
       {userName}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="icon" className="rounded-full">
-            {user.image
-              ? <img src={user.image} className="rounded-full" />
-              : <PersonIcon className="h-5 w-5" />}
+          <Button variant="secondary" size="icon" className="rounded-full" >
+            <UserImage src={user.image} size='full' />
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>

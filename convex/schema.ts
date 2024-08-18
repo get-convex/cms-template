@@ -27,7 +27,7 @@ export const postsZod = {
     .min(2)
     .max(60),
   slug: zodSlug,
-  summary: z.optional(z.string().min(10).max(200)),
+  summary: z.optional(z.string().min(10, '10 characters min').max(200, '200 characters max')),
   content: z.string(),
   imageUrl: zodOptionalUrl,
   authorId: zid("users"),
@@ -39,8 +39,8 @@ export const posts = Table('posts', zodToConvexFields(postsZod))
 export const usersZod = {
   image: zodOptionalUrl,
   url: zodOptionalUrl,
-  tagline: z.optional(z.string().max(50)),
-  bio: z.optional(z.string().max(300)),
+  tagline: z.optional(z.string().max(100, '100 characters max')),
+  bio: z.optional(z.string().max(500, '500 characters max')),
   userId: z.optional(zid('users')),
   name: z.optional(z.string()),
   email: z.optional(z.string().email()),

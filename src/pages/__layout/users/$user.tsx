@@ -16,6 +16,9 @@ export default () => {
     const user = useQuery(api.users.read, {
         id: userId! as Id<'users'>
     });
+    const posts = useQuery(api.users.authoredPosts, {
+        userId: userId! as Id<'users'>
+    })
     const viewerIsUser = viewer?._id === user?._id;
 
     if (user === undefined) return <Message text="Loading..." />
@@ -33,7 +36,7 @@ export default () => {
                         </Link>
                     </div>
                 </EditorToolbar>)}
-                <UserProfile user={user} /></>
+                <UserProfile user={user} posts={posts} /></>
             : <Message text={user === null ? 'Not found' : 'Loading...'} />}
     </div>
 };

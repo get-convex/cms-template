@@ -57,6 +57,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
         };
 
     const { isValid, isDirty } = form.formState;
+    const values = form.getValues();
 
     return (<>
         <EditorToolbar>
@@ -81,14 +82,15 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
         </EditorToolbar>
         <div className="container my-8" >
             {previewing
-                ? <UserProfile user={user} />
+                ? <UserProfile user={{ ...user, ...values }} />
                 : <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} >
                         <TextField name="name" form={form} />
                         <TextField name="image" form={form} />
                         <TextField name="url" form={form} />
-                        <MarkdownField name="tagline" rows={3} form={form} />
-                        <MarkdownField name="bio" rows={10} form={form} />
+                        <TextField name="email" form={form} />
+                        <MarkdownField name="tagline" rows={1} form={form} />
+                        <MarkdownField name="bio" rows={5} form={form} />
                     </form>
                 </Form>}
         </div>

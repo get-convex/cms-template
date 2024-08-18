@@ -1,6 +1,6 @@
 import { Input } from "./ui/input";
 import type { FieldValues, UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "./ui/form";
 import { Textarea } from "./ui/textarea";
 
 
@@ -48,6 +48,7 @@ export function MarkdownField({ name, form, rows }: TextFieldProps<any>) {
             <FormItem className="grid grid-cols-4 gap-4 mb-4 items-center">
                 <div className="col-span-1 row-span-2 text-right">
                     <FormLabel className="text-primary font-mono">{name}</FormLabel>
+                    <FormDescription>Text or Markdown</FormDescription>
                     <FormMessage className="w-full text-convex-yellow italic" />
                 </div>
                 <FormControl className="col-span-3 row-span-2">
