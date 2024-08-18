@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { EditorToolbar } from "@/components/Blog/Edit";
+import { Toolbar } from "@/components/Toolbar";
 import { TextField, MarkdownField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -61,7 +61,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
     const values = form.getValues();
 
     return (<>
-        <EditorToolbar>
+        <Toolbar>
             <div className="flex gap-2 items-center">
 
                 <Switch id="editing"
@@ -80,7 +80,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
                     Save
                 </Button>
             </div>
-        </EditorToolbar>
+        </Toolbar>
         <div className="container my-8" >
             {previewing
                 ? <AuthorProfile user={{ ...user, ...values }} />

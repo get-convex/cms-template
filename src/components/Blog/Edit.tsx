@@ -1,6 +1,6 @@
-import { Authenticated, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { postsZod } from "../../../convex/schema";
@@ -10,12 +10,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Form } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { FilePlusIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { Label } from "../ui/label";
 import { DisplayPost, type Post } from "./Post";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { Toolbar } from "../Toolbar";
 
 export const postsDefaults = {
     slug: '',
@@ -28,34 +28,6 @@ export const postsDefaults = {
     postId: ''
 }
 
-export function EditorToolbar({ post, children }: {
-    post?: Post | 'new';
-    children?: ReactNode;
-}) {
-    return <div className="mb-6">
-        <Authenticated>
-            <div className='absolute bottom-0 left-0 z-10 w-full p-4 bg-convex-purple border-b' >
-                <div className="container dark">
-                    {children
-                        ? (<div className="flex grow justify-between items-center">
-                            {children}
-                        </div>)
-                        : (<div className="flex grow justify-end items-center">
-                            {post && (post === 'new'
-                                ? <Link to={`/new`} className={`flex gap-2 items-center`} >
-                                    <Button>New post<FilePlusIcon className="h-6 w-6 pl-2" /></Button>
-                                </Link>
-                                : <Link to={`/${post.slug}/edit?v=${post._id}`} className={`flex gap-2 items-center`} >
-                                    <Button>Edit post<Pencil1Icon className="h-6 w-6 pl-2" /></Button>
-                                </Link>
-                            )}
-                        </div>)
-                    }
-                </div>
-            </div>
-        </Authenticated>
-    </div>
-}
 
 export function EditablePost({ post }: { post: Post | null }) {
     const { toast } = useToast();
@@ -130,40 +102,41 @@ export function EditablePost({ post }: { post: Post | null }) {
     const { isValid, isDirty } = form.formState;
 
     return (<>
-        <EditorToolbar post={post!}>
+        <Toolbar>
 
+            <div className="flex flex-row justify-between items-center">
 
+                <div className="flex gap-2 items-center">
 
-            <div className="flex gap-2 items-center">
+                    <Switch id="editing"
+                        checked={previewing}
+                        onCheckedChange={(checked) => setPreviewing(checked)} />
+                    <Label htmlFor="editing" className="text-primary">Preview</Label>
+                </div>
 
-                <Switch id="editing"
-                    checked={previewing}
-                    onCheckedChange={(checked) => setPreviewing(checked)} />
-                <Label htmlFor="editing" className="text-primary">Preview</Label>
+                {post && <VersionHistory postId={post.postId}
+                    currentVersion={post._id}
+                    onRestore={(id: Id<'posts'>) => setVersionId(id)}
+                    disabled={isDirty} />}
+
+                <div className={`flex gap-2 items-center`}>
+                    <Button variant="secondary" onClick={onReset}>
+                        {isDirty ? 'Discard' : 'Cancel'}
+                    </Button>
+
+                    <Button variant="outline"
+                        onClick={form.handleSubmit(onSubmit(false))}
+                        disabled={!isValid || !isDirty}>
+                        Save draft
+                    </Button>
+
+                    <Button onClick={form.handleSubmit(onSubmit(true))}
+                        disabled={!isValid || (!isDirty && post?.published)}>
+                        Publish
+                    </Button>
+                </div>
             </div>
-
-            {post && <VersionHistory postId={post.postId}
-                currentVersion={post._id}
-                onRestore={(id: Id<'posts'>) => setVersionId(id)}
-                disabled={isDirty} />}
-
-            <div className={`flex gap-2 items-center`}>
-                <Button variant="secondary" onClick={onReset}>
-                    {isDirty ? 'Discard' : 'Cancel'}
-                </Button>
-
-                <Button variant="outline"
-                    onClick={form.handleSubmit(onSubmit(false))}
-                    disabled={!isValid || !isDirty}>
-                    Save draft
-                </Button>
-
-                <Button onClick={form.handleSubmit(onSubmit(true))}
-                    disabled={!isValid || (!isDirty && post?.published)}>
-                    Publish
-                </Button>
-            </div>
-        </EditorToolbar>
+        </Toolbar>
 
         {previewing
             ? (<div className="my-8" >
