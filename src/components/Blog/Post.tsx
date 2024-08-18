@@ -2,7 +2,7 @@ import { PageTitle } from "../PageTitle";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { StyledMarkdown } from "../Markdown";
 import { Link } from "react-router-dom";
-import { UserImage } from "../User/Profile";
+import { UserImage } from "../Author/Profile";
 
 export interface Post extends Doc<'posts'> {
     author?: Doc<'users'> | null;
@@ -17,7 +17,7 @@ export function Byline({ author, timestamp }: { author: Post["author"], timestam
         <div className="flex items-center gap-2">
             <UserImage src={author.image} />
             <div className="flex flex-col">
-                <Link to={`/users/${authorSlug}`}
+                <Link to={`/authors/${authorSlug}`}
                     className="text-sm underline-offset-2 hover:underline">
                     {author.name}
                 </Link>

@@ -22,14 +22,17 @@ export function UserImage({ src, size }: { src?: string; size?: keyof typeof siz
 }
 
 export function CompactProfile({ user }: { user: Doc<'users'> }) {
-    return (<Link to={`/users/${user._id}`}
+    return (<Link to={`/authors/${user._id}`}
         className="flex flex-row items-center gap-4">
         <UserImage src={user.image} />
-        <h2 className="text-xl">{user.name || `User ${user._id}`}</h2>
+        <div className="flex flex-col gap-2">
+            <h2 className="text-xl">{user.name || `User ${user._id}`}</h2>
+            {user.tagline && <StyledMarkdown content={user.tagline} />}
+        </div>
     </Link>)
 }
 
-export function UserProfile({ user, posts }: {
+export function AuthorProfile({ user, posts }: {
     user: Doc<'users'>,
     posts?: Doc<'posts'>[]
 }) {
@@ -38,7 +41,7 @@ export function UserProfile({ user, posts }: {
             <UserImage src={user.image} size="l" />
             <div className="flex flex-col items-start gap-2">
                 <h1 className="text-2xl">{user.name || `User ${user._id}`}</h1>
-                {user.tagline && <p className="text-muted-foreground">{user.tagline}</p>}
+                {user.tagline && <StyledMarkdown content={user.tagline} />}
                 <StyledContent>
                     <div className="flex flex-row gap-4 text-sm">
 
@@ -69,7 +72,7 @@ export function UserProfile({ user, posts }: {
 
 }
 
-export function UsersList({ users }: { users: Doc<'users'>[] }) {
+export function AuthorsList({ users }: { users: Doc<'users'>[] }) {
     return (<div className="container">
         {users.map(u => <CompactProfile key={u._id} user={u} />)}
     </div>);

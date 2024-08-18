@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { usersZod } from "../../../convex/schema";
-import { UserProfile } from "./Profile";
+import { AuthorProfile } from "./Profile";
 
 export function EditableProfile({ user }: { user: Doc<'users'> }) {
     const { toast } = useToast();
@@ -27,14 +27,15 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
     const zodSchema = z.object(usersZod);
     const defaultValues = user;
 
+
     const form = useForm<z.infer<typeof zodSchema>>({
         defaultValues,
-        resolver: zodResolver(zodSchema)
+        resolver: zodResolver(zodSchema),
     });
 
     const onReset = () => {
         form.reset(defaultValues);
-        navigate(`/users/${user._id}`)
+        navigate(`/authors/${user._id}`)
     };
 
     const onSubmit: SubmitHandler<z.infer<typeof zodSchema>> =
@@ -45,7 +46,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
                     title: "User Profile Updated",
                 });
                 form.reset(data);
-                navigate(`/users/${user._id}`)
+                navigate(`/authors/${user._id}`)
             } catch (e) {
                 const error = e as Error;
                 toast({
@@ -82,7 +83,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
         </EditorToolbar>
         <div className="container my-8" >
             {previewing
-                ? <UserProfile user={{ ...user, ...values }} />
+                ? <AuthorProfile user={{ ...user, ...values }} />
                 : <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} >
                         <TextField name="name" form={form} />

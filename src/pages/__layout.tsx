@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { GetStartedDialog } from "@/components/GetStarted/GetStartedDialog";
 import { Link, Outlet } from "react-router-dom";
-import { UserMenu } from "@/components/User/Menu";
+import { UserMenu } from "@/components/UserMenu";
 import { Toaster } from "@/components/ui/toaster";
 
 

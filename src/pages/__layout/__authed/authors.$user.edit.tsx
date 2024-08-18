@@ -2,7 +2,7 @@ import { Message } from "@/components/PageTitle";
 import { useQuery } from "convex/react";
 import { useParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
-import { EditableProfile } from "@/components/User/Edit";
+import { EditableProfile } from "@/components/Author/Edit";
 import type { Id } from "../../../../convex/_generated/dataModel";
 
 export default () => {

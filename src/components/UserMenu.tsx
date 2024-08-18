@@ -9,12 +9,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { SignInDialog } from "../SignIn/SignInDialog";
+import { SignInDialog } from "./SignIn/SignInDialog";
 import { Link } from "react-router-dom";
-import type { Doc } from "../../../convex/_generated/dataModel";
+import type { Doc } from "../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { UserImage } from "./Profile";
+import { api } from "../../convex/_generated/api";
+import { UserImage } from "./Author/Profile";
 
 export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
   const userName = user.name || user.email
@@ -31,8 +31,8 @@ export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{userName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>
-            <Link to={`/users/${user._id}/edit`}>Edit user profile</Link>
+          <DropdownMenuLabel className="font-normal">
+            <Link to={`/authors/${user._id}/edit`}>View/edit profile</Link>
           </DropdownMenuLabel>
           <DropdownMenuLabel className="flex items-center gap-2 py-0 font-normal">
             Theme

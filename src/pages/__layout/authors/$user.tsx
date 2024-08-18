@@ -3,7 +3,7 @@ import { useQuery } from "convex/react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
-import { UserProfile } from "@/components/User/Profile";
+import { AuthorProfile } from "@/components/Author/Profile";
 import { EditorToolbar } from "@/components/Blog/Edit";
 import { Button } from "@/components/ui/button";
 import { Pencil1Icon } from "@radix-ui/react-icons";
@@ -28,7 +28,7 @@ export default () => {
             ? <>
                 {viewerIsUser && (<EditorToolbar>
                     <div className="w-full flex justify-end">
-                        <Link to={`/users/${user._id}/edit`} className={`flex gap-2 items-center`} >
+                        <Link to={`/authors/${user._id}/edit`} className={`flex gap-2 items-center`} >
                             <Button>
                                 Edit
                                 <Pencil1Icon className="h-6 w-6 pl-2" />
@@ -36,7 +36,7 @@ export default () => {
                         </Link>
                     </div>
                 </EditorToolbar>)}
-                <UserProfile user={user} posts={posts} /></>
+                <AuthorProfile user={user} posts={posts} /></>
             : <Message text={user === null ? 'Not found' : 'Loading...'} />}
     </div>
 };

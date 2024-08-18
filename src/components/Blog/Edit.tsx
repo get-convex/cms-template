@@ -34,8 +34,8 @@ export function EditorToolbar({ post, children }: {
 }) {
     return <div className="mb-6">
         <Authenticated>
-            <div className={`absolute bottom-0 left-0 z-10 w-full p-4 bg-convex-purple border-b`}>
-                <div className="container">
+            <div className='absolute bottom-0 left-0 z-10 w-full p-4 bg-convex-purple border-b' >
+                <div className="container dark">
                     {children
                         ? (<div className="flex grow justify-between items-center">
                             {children}
@@ -139,7 +139,7 @@ export function EditablePost({ post }: { post: Post | null }) {
                 <Switch id="editing"
                     checked={previewing}
                     onCheckedChange={(checked) => setPreviewing(checked)} />
-                <Label htmlFor="editing">Preview</Label>
+                <Label htmlFor="editing" className="text-primary">Preview</Label>
             </div>
 
             {post && <VersionHistory postId={post.postId}
