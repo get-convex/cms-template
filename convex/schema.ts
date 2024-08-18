@@ -38,10 +38,10 @@ export const postContentZod = {
   content: z.string(),
   imageUrl: zodOptionalUrl,
   authorId: zid("users"),
-  published: z.boolean(),
 }
 export const postsZod = {
   ...postContentZod,
+  published: z.boolean(),
   publishTime: z.optional(z.number()),
   updateTime: z.optional(z.number()),
 }
@@ -76,8 +76,9 @@ export default defineSchema({
   posts: posts.table
     .index("by_slug", ["slug"])
     .index("by_slug_published", ["slug", "published"])
-    .index("by_postId", ["postId"])
-    .index("by_postId_published", ["postId", "published"]) // to get by postId
-    .index("by_published", ["published"]) // to get latest posts
+    .index("by_published_time", ["published", "publishTime"]) // to get latest posts
     .index("by_authorId", ["authorId"]),
+  versions: versions.table
+    .index("by_postId", ["postId"])
+    .index("by_slug", ["slug"]) // to lookup old slugs for redirects
 });
