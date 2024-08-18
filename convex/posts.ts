@@ -33,6 +33,7 @@ export const publish = mutation({
             updateTime: Date.now(),
         }
         await update(ctx, { id: postId, patch })
+        return read(ctx, { id: postId });
     }
 })
 

@@ -14,7 +14,7 @@ export default () => {
 
     const post = useQuery(api.posts.getBySlug, {
         slug: slug!,
-        joinAuthor: true
+        withAuthor: true
     });
 
     if (post === undefined) return <Message text="Loading..." />

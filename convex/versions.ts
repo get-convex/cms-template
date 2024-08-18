@@ -16,7 +16,6 @@ export const {
 export const getPostHistory = query({
     args: {
         postId: v.id('posts'),
-        withUsers: v.optional(v.boolean())
     },
     handler: async (ctx, args) => {
         const versions = await ctx.db.query("versions")
@@ -24,19 +23,14 @@ export const getPostHistory = query({
             .order("desc")
             .collect();
 
-        if (args.withUsers) {
-            return Promise.all(
-                versions.map(async (version) => {
-                    const author = (await ctx.db.get(version.authorId))!;
-                    const editor = (await ctx.db.get(version.editorId))
-                    return { ...version, author, editor };
-                }),
-            );
-        } else {
-            return versions;
-        }
-
-    },
+        const withUsers = await Promise.all(
+            versions.map(async (version) => {
+                const author = (await ctx.db.get(version.authorId))!;
+                const editor = (await ctx.db.get(version.editorId))!;
+                return { ...version, author, editor };
+            }));
+        return withUsers;
+    }
 });
 
 

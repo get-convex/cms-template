@@ -69,10 +69,7 @@ export function PreviewGallery({ posts }: { posts: Post[] }) {
 }
 
 export function DisplayPost({ post }: {
-    post: Partial<Post> & {
-        title: string;
-        content: string;
-    }
+    post: Post
 }) {
     return post && (<article className="container" >
         <div className="mb-4 grid grid-cols-2 items-start gap-2">

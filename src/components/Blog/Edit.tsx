@@ -3,7 +3,7 @@ import { api } from "../../../convex/_generated/api";
 import { useEffect, useState } from "react";
 import { MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
-import { postsZod } from "../../../convex/schema";
+import { versionsZod } from "../../../convex/schema";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,38 +14,43 @@ import { Label } from "../ui/label";
 import { DisplayPost, type Post } from "./Post";
 import { useNavigate } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
-import type { Id } from "../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Toolbar } from "../Toolbar";
 
-export const postsDefaults = {
+export const versionDefaults: { [F in keyof typeof versionsZod]: string } = {
+    postId: '',
     slug: '',
     title: '',
     summary: '',
     content: '',
     imageUrl: '',
     authorId: '',
-    published: false,
-    postId: ''
+    editorId: ''
 }
 
 
-export function EditablePost({ post }: { post: Post | null }) {
+export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const { toast } = useToast();
     const navigate = useNavigate();
 
     const [previewing, setPreviewing] = useState(false);
-    const [versionId, setVersionId] = useState(post?._id);
+    const [versionId, setVersionId] = useState(version?._id);
 
     const viewer = useQuery(api.users.viewer);
 
-    const update = useMutation(api.posts.update);
+    const createVersion = useMutation(api.versions.create);
+    const publishPost = useMutation(api.posts.publish);
+    const updatePost = useMutation(api.posts.update);
 
-    const zodSchema = z.object(postsZod);
-    const defaultValues = post || postsDefaults;
+    const zodSchema = z.object(versionsZod);
+    const defaultValues = version || versionDefaults;
 
     useEffect(() => {
-        if (!form.getValues('authorId') && viewer) {
-            form.setValue('authorId', viewer._id);
+        if (viewer) {
+            if (!form.getValues('authorId') && viewer) {
+                form.setValue('authorId', viewer._id);
+            }
+            form.setValue('editorId', viewer._id)
         }
     }, [viewer])
 
@@ -55,45 +60,47 @@ export function EditablePost({ post }: { post: Post | null }) {
         resolver: zodResolver(zodSchema)
     });
 
-    const formSlug = form.getValues('slug');
-    const formPostId = form.getValues('postId');
-    useEffect(() => {
-        // Unless there is already a postId set,
-        // copy over the slug as it changes
-        if (!formPostId) {
-            form.setValue('postId', formSlug);
-        }
-    }, [formSlug, formPostId])
-
     const onReset = () => {
         form.reset(defaultValues);
-        const back = post ? `/${post.slug}?v=${versionId}` : `/`;
+        const back = version ? `/${version.slug}?v=${versionId}` : `/`;
         navigate(back);
     };
 
+    const onRestore = (id: Id<'versions'>) => {
+        setVersionId(id);
+        toast({
+            title: `Now editing version ${id}`,
+            description: `Publish to restore this version, or edit and save as a new version`
+        });
+    }
 
-
-    const onSubmit: (published: boolean) => SubmitHandler<z.infer<typeof zodSchema>> =
-        (published) => async (data) => {
-            if (!data.postId) {
-                // Unless there is already a postId set,
-                // copy the slug as postId (for history)
-                data.postId = data.slug;
-            }
+    const onPublish: SubmitHandler<z.infer<typeof zodSchema>> =
+        async (data) => {
+            // if (!data.postId) {
+            //     // Unless there is already a postId set,
+            //     // copy the slug as postId (for history)
+            //     data.postId = data.slug;
+            // }
             try {
-                const result = await update({ ...data, published });
-                if (!result) throw new Error('Update fn returned no document')
+                const newVersion = await createVersion({ ...data });
+                if (!newVersion) throw new Error('Error saving version');
+
+                const updatedPost = await publishPost({
+                    versionId: newVersion._id
+                });
+                if (!updatedPost) throw new Error('Error updating post');
+
                 toast({
-                    title: "Post Updated",
-                    description: `Updated ${result.slug}`
+                    title: "Post published",
+                    description: `Published version ${newVersion._id} of post ${updatedPost._id}`
                 });
                 form.reset(data);
-                navigate(`/${result.slug}?v=${result._id}`)
+                navigate(`/${newVersion.slug}`)
             } catch (e) {
                 const error = e as Error;
                 toast({
                     variant: "destructive",
-                    title: "Error Updating Post",
+                    title: "Error publishing post",
                     description: error.message,
                 })
             }
@@ -114,9 +121,9 @@ export function EditablePost({ post }: { post: Post | null }) {
                     <Label htmlFor="editing" className="text-primary">Preview</Label>
                 </div>
 
-                {post && <VersionHistory postId={post.postId}
-                    currentVersion={post._id}
-                    onRestore={(id: Id<'posts'>) => setVersionId(id)}
+                {version && <VersionHistory postId={version.postId}
+                    currentVersion={version._id}
+                    onRestore={onRestore}
                     disabled={isDirty} />}
 
                 <div className={`flex gap-2 items-center`}>
@@ -125,13 +132,13 @@ export function EditablePost({ post }: { post: Post | null }) {
                     </Button>
 
                     <Button variant="outline"
-                        onClick={form.handleSubmit(onSubmit(false))}
+                        onClick={form.handleSubmit(onSaveDraft(false))}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={form.handleSubmit(onSubmit(true))}
-                        disabled={!isValid || (!isDirty && post?.published)}>
+                    <Button onClick={form.handleSubmit(onPublish)}
+                        disabled={!isValid || !isDirty}>
                         Publish
                     </Button>
                 </div>
@@ -140,10 +147,10 @@ export function EditablePost({ post }: { post: Post | null }) {
 
         {previewing
             ? (<div className="my-8" >
-                <DisplayPost post={{ ...post, ...form.getValues() }} />
+                <DisplayPost post={{ ...version, ...form.getValues() }} />
             </div>)
             : <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit(false))} >
+                <form onSubmit={form.handleSubmit(onSaveDraft)} >
                     <div className="container">
                         <TextField name="title" form={form} />
                         <TextField name="slug" form={form} />

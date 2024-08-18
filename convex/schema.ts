@@ -44,6 +44,8 @@ export const postsZod = {
   published: z.boolean(),
   publishTime: z.optional(z.number()),
   updateTime: z.optional(z.number()),
+  //deprecated
+  postId: z.optional(z.string())
 }
 export const posts = Table('posts', zodToConvexFields(postsZod))
 
