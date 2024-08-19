@@ -1,14 +1,22 @@
 import { PageTitle } from "../PageTitle";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { StyledMarkdown } from "../Markdown";
 import { Link } from "react-router-dom";
 import { UserImage } from "../Author/Profile";
+import type { Id, Doc } from "../../../convex/_generated/dataModel";
 
-export interface Post extends Doc<'posts'> {
+export type PostWithAuthor = Doc<'posts'> & {
+    author?: Doc<'users'>
+}
+
+// Either a `posts` or `versions` document, or unsaved version
+export type PostOrVersion = Doc<'posts'> & Doc<'versions'> & {
+    _id?: Id<'posts'> | Id<'versions'>;
+    editorId?: Id<'users'> | null;
+    postId?: Id<'posts'>
     author?: Doc<'users'> | null;
 }
 
-export function Byline({ author, timestamp }: { author: Post["author"], timestamp: number }) {
+export function Byline({ author, timestamp }: { author: Doc<'users'> | null, timestamp: number }) {
 
     const date = new Date(timestamp).toDateString();
     const authorSlug = author?._id;
@@ -28,11 +36,11 @@ export function Byline({ author, timestamp }: { author: Post["author"], timestam
         </div>)
 }
 
-export function PostImage({ imageUrl, title }: Pick<Post, 'imageUrl' | 'title'>) {
+export function PostImage({ imageUrl, title }: Pick<PostOrVersion, 'imageUrl' | 'title'>) {
     return <img src={imageUrl} className="w-full rounded-lg" alt={`Cover image for blog post ${title}`} />
 }
 
-export function PostPreview({ post }: { post: Post }) {
+export function PostPreview({ post }: { post: PostWithAuthor }) {
     return post && (<div className="border border-neutral-n10 p-5 md:pr-4  lg:pr-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {post.imageUrl && <PostImage imageUrl={post.imageUrl} title={post.title} />}
         <div className={`flex flex-col gap-6 ${post.imageUrl ? 'col-span-1' : 'md:col-span-2'}`}>
@@ -57,7 +65,7 @@ export function PostPreview({ post }: { post: Post }) {
 }
 
 
-export function PreviewGallery({ posts }: { posts: Post[] }) {
+export function PreviewGallery({ posts }: { posts: Doc<'posts'>[] }) {
     if (!posts?.length) return <PageTitle title="No posts yet" />
     const [hero, ...morePosts] = posts;
     return (<div>
@@ -69,7 +77,7 @@ export function PreviewGallery({ posts }: { posts: Post[] }) {
 }
 
 export function DisplayPost({ post }: {
-    post: Post
+    post: PostOrVersion
 }) {
     return post && (<article className="container" >
         <div className="mb-4 grid grid-cols-2 items-start gap-2">

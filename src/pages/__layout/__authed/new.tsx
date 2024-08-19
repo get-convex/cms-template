@@ -6,7 +6,7 @@ import { EditablePost } from "@/components/Blog/Edit";
 export default () => {
     return (<>
         <Authenticated>
-            <EditablePost post={null} />
+            <EditablePost version={null} />
         </Authenticated>
         <Unauthenticated>
             {/* Should never get here, but just in case */}

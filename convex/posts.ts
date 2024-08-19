@@ -128,27 +128,47 @@ async function lookupByIndex(ctx: QueryCtx, lookupValue: string, options: {
 }
 
 // Retrieve the latest post by its slug
+type PostAugmented = Doc<'posts'> & {
+    draft?: Doc<'versions'>, author?: Doc<'users'>
+};
 export const getBySlug = query({
     args: {
         slug: v.string(),
-        includeDrafts: v.optional(v.boolean()),
+        withDraft: v.optional(v.boolean()),
         withAuthor: v.optional(v.boolean())
     },
     handler: async (ctx, args) => {
-        const published = args.includeDrafts ? 'all' : true
         const [post] = await lookupByIndex(ctx, args.slug, {
             index: 'slug',
-            published,
             n: 1
         });
         if (!post) return null;
-        if (args.withAuthor) {
-            const author = await ctx.db.get(post.authorId);
-            return { ...post, author };
-        } else {
-            return post;
+        const result: PostAugmented = { ...post };
+
+        if (args.withDraft) {
+            // Find the most recent unpublished draft, if any,
+            // created after this post was last updated
+            const draft = await ctx.db.query('versions')
+                .withIndex('by_postId', q => q.eq('postId', post._id))
+                .filter(q => q.and(
+                    q.gt(q.field('_creationTime'),
+                        post.updateTime || post._creationTime),
+                    q.eq(q.field('published'), false)
+                ))
+                .first()
+            if (draft) {
+                result.draft = draft;
+            }
         }
 
+        if (args.withAuthor) {
+            const author = await ctx.db.get(post.authorId);
+            if (author) {
+                result.author = author
+            }
+        }
+
+        return result;
     }
 });
 

@@ -38,10 +38,10 @@ export const postContentZod = {
   content: z.string(),
   imageUrl: zodOptionalUrl,
   authorId: zid("users"),
+  published: z.boolean(),
 }
 export const postsZod = {
   ...postContentZod,
-  published: z.boolean(),
   publishTime: z.optional(z.number()),
   updateTime: z.optional(z.number()),
   //deprecated

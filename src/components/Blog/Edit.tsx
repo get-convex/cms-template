@@ -11,13 +11,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { Form } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
-import { DisplayPost, type Post } from "./Post";
+import { DisplayPost, type PostOrVersion } from "./Post";
 import { useNavigate } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Toolbar } from "../Toolbar";
 
-export const versionDefaults: { [F in keyof typeof versionsZod]: string } = {
+export const versionDefaults = {
     postId: '',
     slug: '',
     title: '',
@@ -25,7 +25,8 @@ export const versionDefaults: { [F in keyof typeof versionsZod]: string } = {
     content: '',
     imageUrl: '',
     authorId: '',
-    editorId: ''
+    editorId: '',
+    published: false
 }
 
 
@@ -38,9 +39,8 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
     const viewer = useQuery(api.users.viewer);
 
-    const createVersion = useMutation(api.versions.create);
+    const saveVersion = useMutation(api.versions.create);
     const publishPost = useMutation(api.posts.publish);
-    const updatePost = useMutation(api.posts.update);
 
     const zodSchema = z.object(versionsZod);
     const defaultValues = version || versionDefaults;
@@ -74,15 +74,32 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
         });
     }
 
+    const onSaveDraft: SubmitHandler<z.infer<typeof zodSchema>> =
+        async (data) => {
+            try {
+                const newVersion = await saveVersion({ ...data });
+                if (!newVersion) throw new Error('Error saving draft');
+
+                toast({
+                    title: "Draft saved",
+                    description: `Saved draft ${newVersion._id} of post ${newVersion.postId}. This draft is not published yet.`
+                });
+                form.reset(data);
+                navigate(`/${newVersion.slug}`)
+            } catch (e) {
+                const error = e as Error;
+                toast({
+                    variant: "destructive",
+                    title: "Error saving draft",
+                    description: error.message,
+                })
+            }
+        }
+
     const onPublish: SubmitHandler<z.infer<typeof zodSchema>> =
         async (data) => {
-            // if (!data.postId) {
-            //     // Unless there is already a postId set,
-            //     // copy the slug as postId (for history)
-            //     data.postId = data.slug;
-            // }
             try {
-                const newVersion = await createVersion({ ...data });
+                const newVersion = await saveVersion({ ...data });
                 if (!newVersion) throw new Error('Error saving version');
 
                 const updatedPost = await publishPost({
@@ -132,7 +149,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     </Button>
 
                     <Button variant="outline"
-                        onClick={form.handleSubmit(onSaveDraft(false))}
+                        onClick={form.handleSubmit(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
@@ -147,7 +164,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
         {previewing
             ? (<div className="my-8" >
-                <DisplayPost post={{ ...version, ...form.getValues() }} />
+                <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
             </div>)
             : <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSaveDraft)} >

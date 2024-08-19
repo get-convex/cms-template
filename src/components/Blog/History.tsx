@@ -1,7 +1,6 @@
 import { ArrowRightIcon, ClockIcon, EyeNoneIcon, EyeOpenIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import type { Post } from "./Post";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { showTimeAgo } from "@/lib/utils";
@@ -17,11 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useToast } from "../ui/use-toast";
-import type { FunctionReturnType } from "convex/server";
 
 interface RestoreProps {
-    onRestore: (id: Id<'posts'>) => void;
+    onRestore: (id: Id<'versions'>) => void;
     disabled: boolean;
 }
 

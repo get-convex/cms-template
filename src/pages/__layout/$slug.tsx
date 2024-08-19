@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../../convex/_generated/api";
-import { DisplayPost } from "@/components/Blog/Post";
+import { DisplayPost, type PostOrVersion } from "@/components/Blog/Post";
 import { Toolbar } from "@/components/Toolbar";
 import { Message } from "@/components/PageTitle";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,11 @@ export default () => {
 
     const post = useQuery(api.posts.getBySlug, {
         slug: slug!,
-        withAuthor: true
+        withAuthor: true,
+        withDraft: true
     });
+    const draftVersion = post?.draft && post.draft._id;
+
 
     if (post === undefined) return <Message text="Loading..." />
     if (post == null) return <Message text="Not found" />
@@ -23,7 +26,9 @@ export default () => {
         <Toolbar >
             <div className="flex grow justify-end items-center">
                 {post &&
-                    <Link to={`/${post.slug}/edit?v=${post._id}`}
+                    <Link to={`/${post.slug}/edit${draftVersion
+                        ? `?v=${draftVersion}`
+                        : ''}`}
                         className={`flex gap-2 items-center`} >
                         <Button>
                             Edit post
@@ -32,10 +37,12 @@ export default () => {
                     </Link>
                 }
             </div>
-        </Toolbar>
-        {post
-            ? <DisplayPost post={post} />
-            : <Message text={post === null ? 'Not found' : 'Loading...'} />}
+        </Toolbar >
+        {
+            post
+                ? <DisplayPost post={post as PostOrVersion} />
+                : <Message text={post === null ? 'Not found' : 'Loading...'} />
+        }
     </>
 };
 
