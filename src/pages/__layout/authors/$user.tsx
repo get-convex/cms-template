@@ -8,7 +8,7 @@ import { Toolbar } from "@/components/Toolbar";
 import { Button } from "@/components/ui/button";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
-export default () => {
+export default function UserPage() {
 
     const { user: userId } = useParams();
 
@@ -39,5 +39,5 @@ export default () => {
                 <AuthorProfile user={user} posts={posts} /></>
             : <Message text={user === null ? 'Not found' : 'Loading...'} />}
     </div>
-};
+}
 

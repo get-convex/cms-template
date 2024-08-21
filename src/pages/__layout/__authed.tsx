@@ -1,7 +1,7 @@
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-export default function () {
+export default function Authed() {
 
     return <>
         <AuthLoading>

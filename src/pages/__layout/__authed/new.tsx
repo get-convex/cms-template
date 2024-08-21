@@ -3,7 +3,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { EditablePost } from "@/components/Blog/Edit";
 
 
-export default () => {
+export default function NewPostPage() {
     return (<>
         <Authenticated>
             <EditablePost version={null} />

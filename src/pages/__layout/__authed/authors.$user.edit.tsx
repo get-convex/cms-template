@@ -5,7 +5,7 @@ import { api } from "../../../../convex/_generated/api";
 import { EditableProfile } from "@/components/Author/Edit";
 import type { Id } from "../../../../convex/_generated/dataModel";
 
-export default () => {
+export default function EditUserPage() {
 
     const { user: userId } = useParams();
 
@@ -22,5 +22,5 @@ export default () => {
     }
 
     return (<EditableProfile user={user} />)
-};
+}
 

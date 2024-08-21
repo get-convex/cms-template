@@ -10,7 +10,7 @@ export function Message({ text }: { text: string }) {
     return <p className="container">{text}</p>
 }
 
-export default () => {
+export default function EditPostPage() {
 
     const [searchParams, _] = useSearchParams()
 

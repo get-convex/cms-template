@@ -1,8 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { posts, versions } from "./schema";
+import { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
-import { publish as publishPost } from "./posts";
 import { crud } from "convex-helpers/server";
 
 export const {

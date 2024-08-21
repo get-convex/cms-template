@@ -4,7 +4,7 @@ import { Message, PageTitle } from "@/components/PageTitle";
 import { AuthorsList } from "@/components/Author/Profile";
 
 
-export default () => {
+export default function AuthorsPage() {
     const users = useQuery(api.users.list, { includePosts: true });
 
     return (<>

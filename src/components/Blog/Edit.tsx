@@ -17,7 +17,7 @@ import { VersionHistory } from "@/components/Blog/History";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Toolbar } from "../Toolbar";
 
-export const versionDefaults = {
+const versionDefaults = {
     postId: '',
     slug: '',
     title: '',
@@ -45,20 +45,22 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const zodSchema = z.object(versionsZod);
     const defaultValues = version || versionDefaults;
 
-    useEffect(() => {
-        if (viewer) {
-            if (!form.getValues('authorId') && viewer) {
-                form.setValue('authorId', viewer._id);
-            }
-            form.setValue('editorId', viewer._id)
-        }
-    }, [viewer])
-
 
     const form = useForm<z.infer<typeof zodSchema>>({
         defaultValues,
         resolver: zodResolver(zodSchema)
     });
+
+    const { getValues, setValue } = form;
+
+    useEffect(() => {
+        if (viewer) {
+            if (!getValues('authorId') && viewer) {
+                setValue('authorId', viewer._id);
+            }
+            setValue('editorId', viewer._id)
+        }
+    }, [viewer, getValues, setValue])
 
     const onReset = () => {
         form.reset(defaultValues);
@@ -149,12 +151,12 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     </Button>
 
                     <Button variant="outline"
-                        onClick={form.handleSubmit(onSaveDraft)}
+                        onClick={void form.handleSubmit(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={form.handleSubmit(onPublish)}
+                    <Button onClick={void form.handleSubmit(onPublish)}
                         disabled={!isValid || !isDirty}>
                         Publish
                     </Button>
@@ -167,7 +169,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                 <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
             </div>)
             : <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSaveDraft)} >
+                <form onSubmit={void form.handleSubmit(onSaveDraft)} >
                     <div className="container">
                         <TextField name="title" form={form} />
                         <TextField name="slug" form={form} />

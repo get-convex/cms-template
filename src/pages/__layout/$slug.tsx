@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
 
-export default () => {
+export default function PostPage() {
 
     const { slug } = useParams();
 
@@ -44,5 +44,5 @@ export default () => {
                 : <Message text={post === null ? 'Not found' : 'Loading...'} />
         }
     </>
-};
+}
 

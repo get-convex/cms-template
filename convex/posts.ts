@@ -21,7 +21,8 @@ export const publish = mutation({
         if (!version) {
             throw new Error(`Version ${args.versionId} not found`);
         }
-        const { _id, _creationTime, editorId, postId, ...content } = version;
+        const { _id, _creationTime, editorId: _editorId,
+            postId, ...content } = version;
         const oldPost = await ctx.db.get(postId);
         if (!oldPost) {
             throw new Error(`Post ${version.postId} not found`);

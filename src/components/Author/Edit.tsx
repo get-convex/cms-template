@@ -75,7 +75,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
                     {isDirty ? 'Discard' : 'Cancel'}
                 </Button>
 
-                <Button onClick={form.handleSubmit(onSubmit)}
+                <Button onClick={void form.handleSubmit(onSubmit)}
                     disabled={!isValid || !isDirty}>
                     Save
                 </Button>
@@ -85,7 +85,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
             {previewing
                 ? <AuthorProfile user={{ ...user, ...values }} />
                 : <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} >
+                    <form onSubmit={void form.handleSubmit(onSubmit)} >
                         <TextField name="name" form={form} />
                         <TextField name="image" form={form} />
                         <TextField name="url" form={form} />

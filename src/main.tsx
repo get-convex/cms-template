@@ -12,7 +12,7 @@ import routes from "~react-pages";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-function RouterApp() {
+export function RouterApp() {
   return (
     <React.Suspense fallback={Layout()}>{useRoutes(routes)}</React.Suspense>
   );

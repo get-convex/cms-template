@@ -1,4 +1,4 @@
-import { ArrowRightIcon, ClockIcon, EyeNoneIcon, EyeOpenIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ArrowRightIcon, ClockIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -10,7 +10,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -95,38 +94,3 @@ function HistoryDropdownItem({ version, selected, disabled }: {
         </Button>
     </DropdownMenuItem>
 }
-
-// @ts-expect-error (unused)
-function HistoryDropdownRadioItem({ post, selected, disabled }: {
-    post: Doc<'posts'>;
-    selected: boolean;
-} & RestoreProps) {
-    const { pathname } = useLocation();
-    const navigate = useNavigate();
-
-    const { _id, _creationTime, published } = post;
-    const created = new Date(_creationTime);
-    const ago = showTimeAgo(_creationTime);
-    const detailed = `${published ? 'Published' : 'Draft'} at ${created.toUTCString()}
-Click to restore this version
-`
-
-    return <DropdownMenuRadioItem key={post._id}
-        value={post._id}
-        className={`w-full text-sm mx-0 py-2 px-0 whitespace-nowrap stroke-background hover:stroke-current ${!published && 'text-muted-foreground'}`}>
-        <Button
-            variant='ghost'
-            className="w-full mx-0 gap-2 flex items-center justify-start  font-normal"
-            title={detailed}
-            onClick={() => navigate(pathname + `?v=${_id}`)}
-            disabled={disabled}
-        >
-            {selected ? <ArrowRightIcon className="stroke-convex-yellow" /> : <ReloadIcon />}
-            <div className="stroke-current">{
-                published ? <EyeOpenIcon /> : <EyeNoneIcon />
-            }</div>
-            <span>{ago}</span>
-        </Button>
-    </DropdownMenuRadioItem>
-}
-

@@ -100,4 +100,4 @@ export function DisplayPost({ post }: {
         <StyledMarkdown content={post.content} />
 
     </article>)
-};
+}

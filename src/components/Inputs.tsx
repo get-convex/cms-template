@@ -36,7 +36,7 @@ export function TextField<Schema extends FieldValues>({ name, form, hidden, requ
                     <Input
                         type={hidden ? 'hidden' : 'text'}
                         {...field}
-                        onBlur={() => form.trigger()}
+                        onBlur={() => void form.trigger()}
                         {...ifRequired} />
                 </FormControl>
 
@@ -69,7 +69,7 @@ export function MarkdownField(
                 <FormControl className="col-span-3 row-span-2">
                     <Textarea
                         rows={rows || 5} {...field}
-                        onBlur={() => form.trigger()}
+                        onBlur={() => void form.trigger()}
                         {...ifRequired} />
                 </FormControl>
             </FormItem>
