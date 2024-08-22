@@ -12,10 +12,10 @@ import { Form } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
 import { DisplayPost, type PostOrVersion } from "./Post";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
-import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Toolbar } from "../Toolbar";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 const versionDefaults = {
     postId: '',
@@ -33,13 +33,13 @@ const versionDefaults = {
 export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [_, setSearchParams] = useSearchParams();
 
     const [previewing, setPreviewing] = useState(false);
-    const [versionId, setVersionId] = useState(version?._id);
 
     const viewer = useQuery(api.users.viewer);
 
-    const saveVersion = useMutation(api.versions.create);
+    const saveDraft = useMutation(api.versions.saveDraft);
     const publishPost = useMutation(api.posts.publish);
 
     const zodSchema = z.object(versionsZod);
@@ -64,30 +64,30 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
     const onReset = () => {
         form.reset(defaultValues);
-        const back = version ? `/${version.slug}?v=${versionId}` : `/`;
+        const back = version ? `/${version.slug}?v=${version._id}` : `/`;
         navigate(back);
     };
-
-    const onRestore = (id: Id<'versions'>) => {
-        setVersionId(id);
-        toast({
-            title: `Now editing version ${id}`,
-            description: `Publish to restore this version, or edit and save as a new version`
-        });
-    }
 
     const onSaveDraft: SubmitHandler<z.infer<typeof zodSchema>> =
         async (data) => {
             try {
-                const newVersion = await saveVersion({ ...data });
+                const newVersion = await saveDraft({ ...data, published: false });
                 if (!newVersion) throw new Error('Error saving draft');
 
                 toast({
                     title: "Draft saved",
-                    description: `Saved draft ${newVersion._id} of post ${newVersion.postId}. This draft is not published yet.`
+                    description: `This draft is not published yet.`
                 });
+
                 form.reset(data);
-                navigate(`/${newVersion.slug}`)
+                if (newVersion.slug !== version?.slug) {
+
+                    navigate(`/${newVersion.slug}/edit?v=${newVersion._id}`)
+                } else {
+                    setSearchParams((params) => (
+                        { ...params, v: newVersion._id }
+                    ))
+                }
             } catch (e) {
                 const error = e as Error;
                 toast({
@@ -100,8 +100,9 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
     const onPublish: SubmitHandler<z.infer<typeof zodSchema>> =
         async (data) => {
+            console.log('onPublish')
             try {
-                const newVersion = await saveVersion({ ...data });
+                const newVersion = await saveDraft({ ...data, published: true });
                 if (!newVersion) throw new Error('Error saving version');
 
                 const updatedPost = await publishPost({
@@ -140,9 +141,8 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     <Label htmlFor="editing" className="text-primary">Preview</Label>
                 </div>
 
-                {version && <VersionHistory postId={version.postId}
+                {version?.postId && <VersionHistory postId={version.postId}
                     currentVersion={version._id}
-                    onRestore={onRestore}
                     disabled={isDirty} />}
 
                 <div className={`flex gap-2 items-center`}>
@@ -151,13 +151,14 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     </Button>
 
                     <Button variant="outline"
-                        onClick={void form.handleSubmit(onSaveDraft)}
+                        onClick={form.handleSubmit(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={void form.handleSubmit(onPublish)}
-                        disabled={!isValid || !isDirty}>
+                    <Button onClick={form.handleSubmit(onPublish)}
+                        disabled={!isValid
+                            || (form.getValues('published') && !isDirty)}>
                         Publish
                     </Button>
                 </div>

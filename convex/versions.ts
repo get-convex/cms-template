@@ -3,6 +3,7 @@ import { mutation, query, type QueryCtx } from "./_generated/server";
 import { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
 import { crud } from "convex-helpers/server";
+import { create as createPost } from "./posts";
 
 export const {
     create,
@@ -10,6 +11,21 @@ export const {
     update,
     destroy
 } = crud(versions, query, mutation);
+
+export const saveDraft = mutation({
+    args: {
+        ...versions.withoutSystemFields,
+        postId: v.union(v.literal(''), v.id('posts'))
+    },
+    handler: async (ctx, args) => {
+        let { postId, editorId, ...data } = args;
+        if (!postId) {
+            const newPost = await createPost(ctx, data);
+            postId = newPost._id;
+        }
+        return await create(ctx, { ...data, editorId, postId });
+    }
+})
 
 const joinUsers = async (ctx: QueryCtx, version: Doc<'versions'>) => {
     const author = (await ctx.db.get(version.authorId))!;

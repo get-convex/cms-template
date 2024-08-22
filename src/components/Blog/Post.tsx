@@ -16,9 +16,12 @@ export type PostOrVersion = Doc<'posts'> & Doc<'versions'> & {
     author?: Doc<'users'> | null;
 }
 
-export function Byline({ author, timestamp }: { author: Doc<'users'> | null, timestamp: number }) {
-
-    const date = new Date(timestamp).toDateString();
+export function Byline({ author, timestamp }: {
+    author: Doc<'users'> | null;
+    timestamp?: number;
+}) {
+    // If no timestamp given, this is a draft/preview; show today's date
+    const date = new Date(timestamp || Date.now()).toDateString();
     const authorSlug = author?._id;
 
     return (author &&
@@ -41,9 +44,10 @@ export function PostImage({ imageUrl, title }: Pick<PostOrVersion, 'imageUrl' | 
 }
 
 export function PostPreview({ post }: { post: PostWithAuthor }) {
-    return post && (<div className="border border-neutral-n10 p-5 md:pr-4  lg:pr-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    return post && (<div className={`border border-neutral-n10 p-5 md:pr-4  lg:pr-4 grid grid-cols-1 md:grid-cols-2 gap-6 ${post.published ? '' : 'italic bg-muted text-muted-foreground'
+        }`}>
         {post.imageUrl && <PostImage imageUrl={post.imageUrl} title={post.title} />}
-        <div className={`flex flex-col gap-6 ${post.imageUrl ? 'col-span-1' : 'md:col-span-2'}`}>
+        <div className={`flex flex-col gap-6 ${post.imageUrl ? 'col-span-1' : 'md:col-span-2'} `}>
             <div className="flex flex-row items-center gap-3">
                 <div className="flex flex-col gap-3">
                     <div className="line-clamp-2 text-2xl leading-tight decoration-neutral-n6 underline-offset-4 hover:underline">
@@ -57,7 +61,7 @@ export function PostPreview({ post }: { post: PostWithAuthor }) {
                 </div>
             </div>
             {post.author &&
-                <Byline author={post.author} timestamp={post._creationTime} />}
+                <Byline author={post.author} timestamp={post.publishTime} />}
         </div>
 
     </div >);
@@ -67,12 +71,8 @@ export function PostPreview({ post }: { post: PostWithAuthor }) {
 
 export function PreviewGallery({ posts }: { posts: Doc<'posts'>[] }) {
     if (!posts?.length) return <PageTitle title="No posts yet" />
-    const [hero, ...morePosts] = posts;
     return (<div>
-        <PostPreview post={hero} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {morePosts?.map((post) => <PostPreview key={post._id} post={post} />)}
-        </div>
+        {posts?.map((post) => <PostPreview key={post._id} post={post} />)}
     </div>)
 }
 
@@ -84,7 +84,8 @@ export function DisplayPost({ post }: {
             <div className="flex flex-col h-full gap-8">
                 <PageTitle title={post.title} />
                 {post.author &&
-                    <Byline author={post.author} timestamp={post._creationTime || Date.now()} />}
+                    <Byline author={post.author}
+                        timestamp={post.publishTime} />}
 
                 <p className="text-muted-foreground italic">
                     {post.summary}

@@ -44,10 +44,8 @@ export const postsZod = {
   ...postContentZod,
   publishTime: z.optional(z.number()),
   updateTime: z.optional(z.number()),
-  //deprecated
-  postId: z.optional(z.string())
-}
-export const posts = Table('posts', zodToConvexFields(postsZod))
+};
+export const posts = Table('posts', zodToConvexFields(postsZod));
 
 export const versionsZod = {
   ...postContentZod,
@@ -78,7 +76,7 @@ export default defineSchema({
   posts: posts.table
     .index("by_slug", ["slug"])
     .index("by_slug_published", ["slug", "published"])
-    .index("by_published_time", ["published", "publishTime"]) // to get latest posts
+    .index("by_published", ["published", "publishTime", "updateTime"])
     .index("by_authorId", ["authorId"]),
   versions: versions.table
     .index("by_postId", ["postId"])

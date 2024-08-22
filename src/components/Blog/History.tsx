@@ -13,28 +13,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { useToast } from "../ui/use-toast";
 
-interface RestoreProps {
-    onRestore: (id: Id<'versions'>) => void;
-    disabled: boolean;
-}
-
-export function VersionHistory({ postId, currentVersion, onRestore, disabled }: {
+export function VersionHistory({ postId, currentVersion, disabled }: {
     postId: Id<'posts'>;
     currentVersion: Id<'versions'>;
-} & RestoreProps) {
-    const history = useQuery(api.versions.getPostHistory, { postId });
+    disabled: boolean;
+}) {
+    console.log('postId', postId, 'currentVersion', currentVersion,)
+
+    const history = useQuery(api.versions.getPostHistory, disabled ? 'skip' : { postId });
     const totalCount = history?.length;
-
-    const [versionId, _] = useState(currentVersion as string);
-
-
-    useEffect(() => {
-
-    }, [versionId])
-
 
     return (
         <DropdownMenu>
@@ -55,9 +45,8 @@ export function VersionHistory({ postId, currentVersion, onRestore, disabled }: 
                     {history?.map(
                         (v) => <HistoryDropdownItem
                             key={v._id}
-                            selected={v._id === versionId}
+                            selected={v._id === currentVersion}
                             version={v}
-                            onRestore={onRestore}
                             disabled={disabled} />
                     )}
                 </ScrollArea>
@@ -69,9 +58,19 @@ export function VersionHistory({ postId, currentVersion, onRestore, disabled }: 
 function HistoryDropdownItem({ version, selected, disabled }: {
     version: Doc<'versions'> & { editor: Doc<'users'>, author: Doc<'users'> };
     selected: boolean;
-} & RestoreProps) {
-    const { pathname } = useLocation();
-    const navigate = useNavigate();
+    disabled: boolean;
+}) {
+    const { toast } = useToast();
+    const [_, setSearchParams] = useSearchParams();
+
+    const restoreVersion = (id: Id<'versions'>) => {
+        setSearchParams((params) => ({ ...params, v: id }));
+        toast({
+            title: `Now editing version ${id}`,
+            description: `Publish to restore this version, or edit and save as a new version`
+        });
+    }
+
 
     const { _id, _creationTime } = version;
     const created = new Date(_creationTime).toUTCString();
@@ -80,12 +79,12 @@ function HistoryDropdownItem({ version, selected, disabled }: {
     const viewing = selected ? 'Currently viewing this version' : 'Click to restore this version';
     const details = `${version.editor.name} edited at ${created}`;
 
-    return <DropdownMenuItem key={version._id}
+    return <DropdownMenuItem key={_id}
         className={`w-full text-sm mx-0 py-2 px-0 whitespace-nowrap stroke-background hover:stroke-current`} title={[viewing, details].join('\n')}>
         <Button
             variant='ghost'
             className={`w-full mx-0 gap-2 flex items-center justify-start  font-normal ${selected ? 'text-convex-yellow stroke-convex-yellow disabled:opacity-100' : ''}`}
-            onClick={() => navigate(pathname + `?v=${_id}`)}
+            onClick={() => restoreVersion(_id)}
             disabled={disabled || selected}
         >
             {selected ? <ArrowRightIcon /> : <ReloadIcon />}

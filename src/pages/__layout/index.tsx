@@ -11,12 +11,14 @@ const Component: FC = () => {
     const posts = useQuery(api.posts.list);
     return (<>
         <Toolbar>
-            <Link to={`/new`} className={`flex gap-2 items-center`} >
-                <Button>
-                    New post
-                    <FilePlusIcon className="h-6 w-6 pl-2" />
-                </Button>
-            </Link>
+            <div className="w-full flex justify-end">
+                <Link to={`/new`} className={`flex gap-2 items-center`} >
+                    <Button>
+                        New post
+                        <FilePlusIcon className="h-6 w-6 pl-2" />
+                    </Button>
+                </Link>
+            </div>
         </Toolbar>
         <div className="container">
             {posts && <PreviewGallery posts={posts} />}

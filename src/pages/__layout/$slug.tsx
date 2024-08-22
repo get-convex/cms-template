@@ -11,14 +11,15 @@ import { Pencil1Icon } from "@radix-ui/react-icons";
 export default function PostPage() {
 
     const { slug } = useParams();
+    const viewer = useQuery(api.users.viewer);
+    const loading = slug === undefined || viewer === undefined;
 
-    const post = useQuery(api.posts.getBySlug, {
-        slug: slug!,
+    const post = useQuery(api.posts.getBySlug, loading ? 'skip' : {
+        slug,
         withAuthor: true,
-        withDraft: true
+        withDraft: !!viewer
     });
     const draftVersion = post?.draft && post.draft._id;
-
 
     if (post === undefined) return <Message text="Loading..." />
     if (post == null) return <Message text="Not found" />
