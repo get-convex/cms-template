@@ -1,9 +1,9 @@
 import { v } from "convex/values";
-import { mutation, query, type QueryCtx } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { posts } from "./schema";
-import type { Doc } from "./_generated/dataModel";
 import { crud } from "convex-helpers/server";
 import { viewer as getViewer } from "./users";
+import type { Doc } from "./_generated/dataModel";
 
 export const {
     create,
@@ -97,34 +97,6 @@ export const getById = query({
     }
 })
 
-
-
-
-async function lookupByIndex(ctx: QueryCtx, lookupValue: string, options: {
-    index: 'slug',
-    published?: true | false | 'all',
-    n?: number
-} = { index: 'slug', published: true }) {
-    const indexName = `by_${options.index}` as const;
-    const indexPublished = `${indexName}_published` as const;
-    const db = ctx.db.query("posts");
-    let query;
-    if (options.published === 'all') {
-        query = db.withIndex(indexName, (q) =>
-            q.eq(options.index, lookupValue));
-    } else {
-        query = db.withIndex(indexPublished,
-            (q) => q.eq(options.index, lookupValue)
-                .eq('published', true));
-    }
-    const ordered = query.order('desc')
-    const posts = await (options.n
-        ? ordered.take(options.n)
-        : ordered.collect());
-    return posts;
-}
-
-// Retrieve the latest post by its slug
 type PostAugmented = Doc<'posts'> & {
     draft?: Doc<'versions'>;
     author?: Doc<'users'>;

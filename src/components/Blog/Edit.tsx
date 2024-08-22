@@ -100,7 +100,6 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
     const onPublish: SubmitHandler<z.infer<typeof zodSchema>> =
         async (data) => {
-            console.log('onPublish')
             try {
                 const newVersion = await saveDraft({ ...data, published: true });
                 if (!newVersion) throw new Error('Error saving version');
@@ -151,12 +150,18 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     </Button>
 
                     <Button variant="outline"
-                        onClick={form.handleSubmit(onSaveDraft)}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            form.handleSubmit(onSaveDraft)
+                        }}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={form.handleSubmit(onPublish)}
+                    <Button onClick={(e) => {
+                        e.preventDefault();
+                        form.handleSubmit(onPublish)
+                    }}
                         disabled={!isValid
                             || (form.getValues('published') && !isDirty)}>
                         Publish

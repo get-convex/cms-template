@@ -21,8 +21,6 @@ export function VersionHistory({ postId, currentVersion, disabled }: {
     currentVersion: Id<'versions'>;
     disabled: boolean;
 }) {
-    console.log('postId', postId, 'currentVersion', currentVersion,)
-
     const history = useQuery(api.versions.getPostHistory, disabled ? 'skip' : { postId });
     const totalCount = history?.length;
 

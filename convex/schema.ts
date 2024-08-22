@@ -75,7 +75,6 @@ export default defineSchema({
   users: users.table,
   posts: posts.table
     .index("by_slug", ["slug"])
-    .index("by_slug_published", ["slug", "published"])
     .index("by_published", ["published", "publishTime", "updateTime"])
     .index("by_authorId", ["authorId"]),
   versions: versions.table
