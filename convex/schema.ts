@@ -44,6 +44,8 @@ export const postsZod = {
   ...postContentZod,
   publishTime: z.optional(z.number()),
   updateTime: z.optional(z.number()),
+  // deprecated
+  postId: zodOptionalString()
 };
 export const posts = Table('posts', zodToConvexFields(postsZod));
 
@@ -59,13 +61,14 @@ export const usersZod = {
   url: zodOptionalUrl,
   tagline: zodOptionalString(z.string().max(100, '100 characters max')),
   bio: zodOptionalString(z.string().max(500, '500 characters max')),
-  userId: z.optional(zid('users')),
   name: zodOptionalString(),
   email: zodOptionalString(z.string().email()),
   emailVerificationTime: z.optional(z.number()),
   phone: zodOptionalString(),
   phoneVerificationTime: z.optional(z.number()),
   isAnonymous: z.optional(z.boolean()),
+  // deprecated
+  userId: z.optional(zid('users')),
 }
 export const users = Table('users', zodToConvexFields(usersZod));
 
