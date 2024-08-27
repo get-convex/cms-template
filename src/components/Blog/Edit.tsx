@@ -53,10 +53,10 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
     const { getValues, setValue, setError } = form;
 
-    const slugTaken = useQuery(api.posts.isSlugTaken, {
+    const slugTaken = useQuery(api.posts.isSlugTaken, getValues('slug') ? {
         slug: getValues('slug'),
         postId: getValues('postId')
-    });
+    } : 'skip');
 
     useEffect(() => {
         if (slugTaken) {
