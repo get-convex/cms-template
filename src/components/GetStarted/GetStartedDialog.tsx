@@ -45,8 +45,25 @@ function GetStartedContent() {
   return (
     <div className="overflow-y-auto">
       <p className="text-muted-foreground mb-2">
-        This template is a starting point for building your fullstack web
-        application.
+        This template is a starting point for building your content-driven fullstack web application.
+      </p>
+      <p className="text-muted-foreground italic mb-2">
+        To prevent abuse, the content in the public demo app hosted at{" "}
+        <a
+          href="https://www.convex-cms.com/"
+          className="underline underline-offset-4 hover:no-underline"
+          target="_blank"
+        >
+          convex-cms.com
+        </a>{" "}
+        is reset daily using a Convex{" "}
+        <a
+          href="https://docs.convex.dev/scheduling/cron-jobs"
+          className="underline underline-offset-4 hover:no-underline"
+          target="_blank"
+        >cron job</a>
+        {" "}defined in <Code>convex/crons.ts</Code>. You can edit & create new posts, but your changes will be deleted within 24 hours.
+
       </p>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
@@ -60,19 +77,19 @@ function GetStartedContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex gap-2">
-              <StackIcon /> Inspect your database
+              <StackIcon /> Inspect the database
             </CardTitle>
           </CardHeader>
           <CardContent>
-            The{" "}
+            Open the{" "}
             <a
               href="https://dashboard.convex.dev/"
               className="underline underline-offset-4 hover:no-underline"
               target="_blank"
             >
               Convex dashboard
-            </a>{" "}
-            is already open in another window.
+            </a>
+            {" "}in another window.
           </CardContent>
         </Card>
         <Card>
@@ -83,8 +100,7 @@ function GetStartedContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            Edit <Code>convex/messages.ts</Code> to change the backend
-            functionality.
+            Edit the functions in the <Code>convex/</Code> directory to change the backend functionality.
           </CardContent>
         </Card>
         <Card>
@@ -95,7 +111,7 @@ function GetStartedContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            Edit <Code>src/App.tsx</Code> to change your frontend.
+            Edit <Code>src/components</Code> and <Code>src/pages</Code> to change your frontend.
           </CardContent>
         </Card>
       </div>
