@@ -5,7 +5,7 @@ import { AuthorsList } from "@/components/Author/Profile";
 
 
 export default function AuthorsPage() {
-    const users = useQuery(api.users.list, { includePosts: true });
+    const users = useQuery(api.users.listAuthors);
 
     return (<>
         <div className="container">

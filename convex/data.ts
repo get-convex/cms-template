@@ -7,7 +7,6 @@ const USERS = [
   "ian@convex.dev",
   "wayne@convex.dev",
   "contact@anjana.dev",
-  "tom@tomredman.ca"
 ];
 const POSTS = [
   {
@@ -19,7 +18,6 @@ const POSTS = [
   The creative startup office buzzed with excitement as they mapped out new possibilities. Jason pointed out key features on the laptop screen while Emily jotted down implementation ideas. The large screen in the office displayed the CMS dashboard, hinting at the powerful new tools they were eager to incorporate. This new addition to Convex’s offerings not only fueled their excitement but also opened up a world of possibilities for their startup’s growth.`,
     imageUrl:
       "https://pleasant-albatross-666.convex.cloud/api/storage/82027b58-1979-435c-a41a-e55205b0a0c5",
-    postId: "c",
     published: true,
     slug: "convexcms",
     summary:
@@ -210,7 +208,7 @@ And that’s all it takes to get self-hosted auth to work. From here I recommend
 ](https: //labs.convex.dev/auth). They go into detail on how to implement the various authentication methods and on the trade-offs between them. I hope you’ll find the library useful. Please let us know what you think on our [discord](https://arc.net/l/quote/dxljwnkc)."
 `},
   {
-    authorIndex: 3,
+    authorIndex: 1,
     content: `A team of full-stack developers, comprised of Alex, Priya, and Mateo, were always on the lookout for new tools and technologies that could push the boundaries of their projects. When they heard about the Convex “Zero to One” hackathon, they decided to join, eager to explore what this new backend platform could offer.
 
 The hackathon challenge was simple yet ambitious: build something unique using Convex.dev in just 48 hours. The team brainstormed and decided to create a blog platform that could effortlessly handle dynamic content and user interactions. They were drawn to Convex’s promise of fast, scalable, and serverless backend solutions, which seemed perfect for their idea.
@@ -229,7 +227,7 @@ With Convex.dev, they were confident they could scale their startup quickly and 
     title: "From Hackathon to Startup with Convex",
   },
   {
-    authorIndex: 1,
+    authorIndex: 2,
     content: `Two full-stack developers, Emily and Jason, were deep into building their startup, an innovative platform aimed at simplifying online event management. They had been struggling with the backend infrastructure, trying to find a solution that would allow them to focus more on the frontend and less on managing complex databases and APIs.
   
   One day, Emily stumbled upon Convex.dev while researching backend solutions. Excited, she immediately shared it with Jason. They were both impressed by how Convex.dev promised to simplify their workflow by providing a fully managed backend platform that integrated seamlessly with their preferred frontend frameworks. The speed and ease of use were exactly what they needed to accelerate their development process. They could now build, test, and deploy features faster, giving them more time to focus on their startup’s unique value proposition.
@@ -237,7 +235,6 @@ With Convex.dev, they were confident they could scale their startup quickly and 
   In their sleek, modern office, Emily and Jason dove into Convex.dev, quickly realizing how it could transform their project. The whiteboard behind them was soon filled with new ideas and plans, as they excitedly mapped out the next steps for their startup, now confident that they had the right tools to bring their vision to life.`,
     imageUrl:
       "https://pleasant-albatross-666.convex.cloud/api/storage/19ead46b-c4d6-47df-bd3f-ff007761c6c0",
-    postId: "d",
     published: true,
     slug: "discovering-convex",
     summary:
@@ -278,7 +275,7 @@ export const reset = internalMutation({
         { ...post, authorId, publishTime: Date.now() }
       );
       await ctx.db.insert('versions',
-        { ...p, postId, authorId, editorId: authorId }
+        { ...post, postId, authorId, editorId: authorId }
       );
     });
 

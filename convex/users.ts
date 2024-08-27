@@ -30,20 +30,15 @@ export const authoredPosts = query({
   }
 })
 
-export const list = query({
-  args: {
-    includePosts: v.boolean()
-  },
-  handler: async (ctx, args) => {
+export const listAuthors = query({
+  args: {},
+  handler: async (ctx) => {
     const users = await ctx.db.query('users').collect();
-    if (args.includePosts) {
-      return await Promise.all(users.map(async u => {
-        const posts = await authoredPosts(ctx, { userId: u._id });
-        return { ...u, posts }
-      }));
-    } else {
-      return users;
-    }
+    const withPosts = await Promise.all(users.map(async u => {
+      const posts = await authoredPosts(ctx, { userId: u._id });
+      return posts.length ? { ...u, posts } : null
+    }))
+    return withPosts.filter(u => !!u);
   }
 });
 
