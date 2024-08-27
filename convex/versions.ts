@@ -3,7 +3,7 @@ import { mutation, query, type QueryCtx } from "./_generated/server";
 import { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
 import { crud } from "convex-helpers/server";
-import { create as createPost } from "./posts";
+import { create as createPost, isSlugTaken } from "./posts";
 
 export const {
     create,
@@ -19,6 +19,10 @@ export const saveDraft = mutation({
     },
     handler: async (ctx, args) => {
         const { postId, editorId, ...data } = args;
+        const slugTaken = await isSlugTaken(ctx,
+            { slug: data.slug, postId: postId || undefined });
+        if (slugTaken) throw new Error(slugTaken);
+
         let id = postId;
         if (!id) {
             const newPost = await createPost(ctx, data);

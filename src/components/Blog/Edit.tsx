@@ -42,15 +42,27 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const publishPost = useMutation(api.posts.publish);
 
     const zodSchema = z.object(versionsZod);
+    type Schema = z.infer<typeof zodSchema>;
+
     const defaultValues = version || versionDefaults;
 
-
-    const form = useForm<z.infer<typeof zodSchema>>({
+    const form = useForm<Schema>({
         defaultValues,
         resolver: zodResolver(zodSchema)
     });
 
-    const { getValues, setValue } = form;
+    const { getValues, setValue, setError } = form;
+
+    const slugTaken = useQuery(api.posts.isSlugTaken, {
+        slug: getValues('slug'),
+        postId: getValues('postId')
+    });
+
+    useEffect(() => {
+        if (slugTaken) {
+            setError('slug', { message: 'Slug already in use' });
+        }
+    }, [slugTaken, setError])
 
     useEffect(() => {
         if (viewer) {
@@ -151,11 +163,11 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
                 <div className={`flex gap-2 items-center`}>
                     <Button variant="secondary" type="reset"
-                        onClick={() => {
-                            const cancelled = !isDirty;
-                            form.reset(defaultValues);
-                            if (cancelled) navigate(-1);
-                        }}>
+                        onClick={() =>
+                            isDirty ?
+                                form.reset(defaultValues)
+                                : navigate(-1)
+                        }>
                         {isDirty ? 'Reset' : 'Cancel'}
                     </Button>
 
@@ -174,23 +186,25 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     </Button>
                 </div>
             </div>
-        </Toolbar>
+        </Toolbar >
 
-        {previewing
-            ? (<div className="my-8" >
-                <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
-            </div>)
-            : <Form {...form}>
-                <form>
-                    <div className="container">
-                        <TextField name="title" form={form} />
-                        <TextField name="slug" form={form} />
-                        <TextField name="imageUrl" form={form} />
-                        <MarkdownField name="summary" rows={3} form={form} />
-                        <MarkdownField name="content" rows={10} form={form} />
-                    </div>
-                </form>
-            </Form>}
+        {
+            previewing
+                ? (<div className="my-8" >
+                    <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
+                </div>)
+                : <Form {...form}>
+                    <form>
+                        <div className="container">
+                            <TextField name="title" form={form} />
+                            <TextField name="slug" form={form} />
+                            <TextField name="imageUrl" form={form} />
+                            <MarkdownField name="summary" rows={3} form={form} />
+                            <MarkdownField name="content" rows={10} form={form} />
+                        </div>
+                    </form>
+                </Form>
+        }
 
     </>)
 

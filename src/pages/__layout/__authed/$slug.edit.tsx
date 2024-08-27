@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
 import { EditablePost } from "@/components/Blog/Edit";
 import type { Id } from "../../../../convex/_generated/dataModel";
@@ -12,7 +12,9 @@ export function Message({ text }: { text: string }) {
 
 export default function EditPostPage() {
 
-    const [searchParams, _] = useSearchParams()
+    const { slug } = useParams();
+    const [searchParams, _] = useSearchParams();
+    const navigate = useNavigate();
 
     // If we navigated here from a link on the site,
     // the searchParams should include a versionId
@@ -23,7 +25,6 @@ export default function EditPostPage() {
 
     // If we navigated here manually or the versionId
     // is otherwise missing, fall back to lookup by slug
-    const { slug } = useParams();
     const postBySlug = useQuery(api.posts.getBySlug, versionId
         ? 'skip'
         : {
@@ -36,6 +37,9 @@ export default function EditPostPage() {
 
     if (post === undefined) return <Message text="Loading..." />;
     if (post == null) return <Message text="Not found" />;
+    if (post.slug !== slug) {
+        return navigate(`/${post.slug}/edit`);
+    }
     return <EditablePost version={post} />;
 }
 

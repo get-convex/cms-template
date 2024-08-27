@@ -86,6 +86,7 @@ export const getById = query({
 })
 
 type PostAugmented = Doc<'posts'> & {
+    publicVersion?: Doc<'versions'>;
     draft?: Doc<'versions'>;
     author?: Doc<'users'>;
 };
@@ -96,20 +97,25 @@ export const getBySlug = query({
         withAuthor: v.optional(v.boolean())
     },
     handler: async (ctx, args) => {
+        const versionsBySlug = ctx.db.query('versions')
+            .withIndex('by_slug', q => q.eq('slug', args.slug))
+
+        const publicVersion = await versionsBySlug
+            .filter(q => q.eq(q.field('published'), true))
+            .order('desc')
+            .first();
+
         let post = await ctx.db.query('posts')
             .withIndex('by_slug', q => q.eq('slug', args.slug))
-            .unique();
+            .order('desc')
+            .first();
 
         if (!post) {
             // The slug for this post may have changed
             // try searching for this slug in old versions
-            const version = await ctx.db.query('versions')
-                .withIndex('by_slug', q => q.eq('slug', args.slug))
-                .first();
-
-            if (version) {
+            if (publicVersion) {
                 // The slug is outdated, lookup the postId
-                post = await ctx.db.get(version.postId);
+                post = await ctx.db.get(publicVersion.postId);
             }
         }
         if (!post) return null; // The slug is unknown
@@ -121,7 +127,10 @@ export const getBySlug = query({
             return null;
         }
 
-        const result: PostAugmented = { ...post };
+        const result: PostAugmented = post;
+        if (publicVersion) {
+            result.publicVersion = publicVersion;
+        }
 
         if (args.withDraft) {
             // Find the most recent unpublished draft, if any,
@@ -133,7 +142,8 @@ export const getBySlug = query({
                         post.updateTime || post._creationTime),
                     q.eq(q.field('published'), false)
                 ))
-                .first()
+                .order('desc')
+                .first();
             if (draft) {
                 result.draft = draft;
             }
@@ -150,3 +160,42 @@ export const getBySlug = query({
     }
 });
 
+
+export const isSlugTaken = query({
+    args: {
+        slug: v.string(),
+        postId: v.optional(v.id('posts'))
+    },
+    handler: async (ctx, args) => {
+        const { slug, postId } = args;
+
+        // Find any existing post(s) with this slug and flag
+        // any whose postId doesn't match the one given
+        const posts = await ctx.db.query('posts')
+            .withIndex('by_slug', q => q.eq('slug', slug))
+            .collect();
+        const badPostIds = new Set(
+            posts.filter(p => p._id !== postId).map(p => p._id)
+        );
+
+        // It's possible that the slug is no longer in use on any posts,
+        // but had previously been used in an old version of another post.
+        // Collect all version(s) with this slug...
+        const versions = await ctx.db.query('versions')
+            .withIndex('by_slug', q => q.eq('slug', slug))
+            .collect();
+        // ...and flag any whose postId doesn't match the one given.
+        const badVersions = versions.filter(v => v.postId !== postId);
+        badVersions.map(v => badPostIds.add(v.postId))
+
+
+        if (badPostIds.size > 0) {
+            // This slug is unavailable (already/previously in use)
+            const msg = `Slug "${slug}" is unavailable, used on post(s) ${Array.from(badPostIds).toString()}`;
+            console.error(msg);
+            return msg;
+        } else {
+            return false;
+        }
+    }
+})
