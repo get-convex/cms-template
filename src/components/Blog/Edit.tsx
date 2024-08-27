@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useEffect, useState, type MouseEventHandler } from "react";
-import { MarkdownField, TextField } from "@/components/Inputs";
+import { ImageField, MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { versionsZod } from "../../../convex/schema";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -41,7 +41,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const saveDraft = useMutation(api.versions.saveDraft);
     const publishPost = useMutation(api.posts.publish);
 
-    const zodSchema = z.object(versionsZod);
+    const zodSchema = z.object({ ...versionsZod, image: z.any() });
     type Schema = z.infer<typeof zodSchema>;
 
     const defaultValues = version || versionDefaults;
@@ -198,7 +198,8 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                         <div className="container">
                             <TextField name="title" form={form} />
                             <TextField name="slug" form={form} />
-                            <TextField name="imageUrl" form={form} />
+                            <TextField name="imageUrl" form={form} hidden />
+                            <ImageField name="image" form={form} userId={form.getValues('editorId')} />
                             <MarkdownField name="summary" rows={3} form={form} />
                             <MarkdownField name="content" rows={10} form={form} />
                         </div>

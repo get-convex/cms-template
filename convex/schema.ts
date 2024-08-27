@@ -72,6 +72,13 @@ export const usersZod = {
 }
 export const users = Table('users', zodToConvexFields(usersZod));
 
+export const imagesZod = {
+  name: zodOptionalString(),
+  storageId: zid('_storage'),
+  url: z.string().url()
+}
+export const images = Table('images', zodToConvexFields(imagesZod))
+
 //// Convex DB ////
 export default defineSchema({
   ...authTables,
@@ -82,5 +89,7 @@ export default defineSchema({
     .index("by_authorId", ["authorId"]),
   versions: versions.table
     .index("by_postId", ["postId"])
-    .index("by_slug", ["slug"]) // to lookup old slugs for redirects
+    .index("by_slug", ["slug"]), // to lookup old slugs for redirects
+  images: images.table
+    .index("by_storageID", ["storageId"])
 });

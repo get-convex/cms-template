@@ -11,6 +11,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  esbuild: {
+    platform: 'node',
+  },
   build: {
     sourcemap: true,
   },
