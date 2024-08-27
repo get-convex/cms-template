@@ -166,7 +166,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                         onClick={() =>
                             isDirty ?
                                 form.reset(defaultValues)
-                                : navigate(-1)
+                                : navigate(`/${version ? version.slug : ''}`)
                         }>
                         {isDirty ? 'Reset' : 'Cancel'}
                     </Button>
