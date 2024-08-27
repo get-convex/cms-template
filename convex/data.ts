@@ -2,9 +2,54 @@ import { internalMutation } from "./_generated/server";
 import type { TableNames } from "./_generated/dataModel";
 
 
-const USERS = [{}];
+const USERS = [
+  {
+    email: "ian@convex.dev",
+    emailVerificationTime: 1723716062529,
+    image:
+      "https://avatars.githubusercontent.com/u/366683?v=4",
+    name: "Ian Macartney",
+  },
+  {
+    email: "wayne@convex.dev",
+    emailVerificationTime: 1723607151950,
+    image:
+      "https://avatars.githubusercontent.com/u/720186?v=4",
+    name: "Wayne Sutton",
+  },
+  {
+    email: "contact@anjana.dev",
+    emailVerificationTime: 1723639304753,
+    image:
+      "https://avatars.githubusercontent.com/u/5424927?v=4",
+    name: "Anjana Vakil",
+  },
+  {
+    email: "tom@tomredman.ca",
+    emailVerificationTime: 1724094339527,
+    image:
+      "https://avatars.githubusercontent.com/u/4225378?v=4",
+    name: "Tom Redman",
+  }
+];
 const POSTS = [
   {
+    authorIndex: 1,
+    content: `A few months into their startup journey, Emily and Jason had successfully launched their platform, thanks to the robust backend support from Convex.dev. Their users loved the smooth, intuitive experience, and the team was ready to take the next big step: adding content management capabilities.
+  
+  When Convex announced their new CMS feature, Emily and Jason were thrilled. The CMS was exactly what they needed to empower their users to manage their content seamlessly within the platform. The developers spent the day exploring the new feature, diving into its functionalities, and brainstorming how they could integrate it to enhance their platform’s offerings.
+  
+  The creative startup office buzzed with excitement as they mapped out new possibilities. Jason pointed out key features on the laptop screen while Emily jotted down implementation ideas. The large screen in the office displayed the CMS dashboard, hinting at the powerful new tools they were eager to incorporate. This new addition to Convex’s offerings not only fueled their excitement but also opened up a world of possibilities for their startup’s growth.`,
+    imageUrl:
+      "https://pleasant-albatross-666.convex.cloud/api/storage/82027b58-1979-435c-a41a-e55205b0a0c5",
+    published: true,
+    slug: "convexcms",
+    summary:
+      "This new addition to Convex’s offerings not only fueled their excitement but also opened up a world of possibilities for their startup’s growth.",
+    title: "Exploring Convex’s New CMS",
+  },
+  {
+    authorIndex: 0,
     "title": "Introducing Convex Auth",
     "slug": "introducing-convex-auth",
     "summary": "Convex Auth is a library for implementing authentication natively in your Convex backend.",
@@ -185,7 +230,27 @@ export const send = mutation({
 
 And that’s all it takes to get self-hosted auth to work. From here I recommend you read through the [docs
 ](https: //labs.convex.dev/auth). They go into detail on how to implement the various authentication methods and on the trade-offs between them. I hope you’ll find the library useful. Please let us know what you think on our [discord](https://arc.net/l/quote/dxljwnkc)."
-`}
+`},
+  {
+    authorIndex: 3,
+    content: `A team of full-stack developers, comprised of Alex, Priya, and Mateo, were always on the lookout for new tools and technologies that could push the boundaries of their projects. When they heard about the Convex “Zero to One” hackathon, they decided to join, eager to explore what this new backend platform could offer.
+
+The hackathon challenge was simple yet ambitious: build something unique using Convex.dev in just 48 hours. The team brainstormed and decided to create a blog platform that could effortlessly handle dynamic content and user interactions. They were drawn to Convex’s promise of fast, scalable, and serverless backend solutions, which seemed perfect for their idea.
+
+As they delved into the development, they were impressed by how quickly they could set up their backend using Convex. The platform’s real-time features and seamless integration with their frontend frameworks allowed them to focus on creating a rich, interactive user experience without worrying about managing servers or databases. The project came together faster than they expected, with Convex handling the heavy lifting behind the scenes.
+
+By the end of the hackathon, their blog platform was not only functional but also robust and scalable. The experience had been so smooth and empowering that they decided to take their idea further. The team transformed their hackathon project into a full-fledged startup, using Convex as the backbone of their platform. They envisioned expanding the blog into a community-driven space where users could create, share, and interact with content effortlessly.
+
+With Convex.dev, they were confident they could scale their startup quickly and efficiently. What started as a hackathon experiment had now evolved into a startup venture, fueled by the possibilities that Convex unlocked for them. The journey from zero to one was just the beginning, and they were excited to see where Convex would take them next.`,
+    imageUrl:
+      "https://pleasant-albatross-666.convex.cloud/api/storage/6a651783-cb93-4878-a7c9-784091e560c4",
+    postId: "h",
+    published: true,
+    slug: "hackathon-startup",
+    summary:
+      "With Convex.dev, they were confident they could scale their startup quickly and efficiently. ",
+    title: "From Hackathon to Startup with Convex",
+  }
 ];
 
 
