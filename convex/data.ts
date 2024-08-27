@@ -1,36 +1,13 @@
 import { internalMutation } from "./_generated/server";
-import type { TableNames } from "./_generated/dataModel";
+import type { Id, TableNames } from "./_generated/dataModel";
+import { byEmail } from "./users";
 
 
 const USERS = [
-  {
-    email: "ian@convex.dev",
-    emailVerificationTime: 1723716062529,
-    image:
-      "https://avatars.githubusercontent.com/u/366683?v=4",
-    name: "Ian Macartney",
-  },
-  {
-    email: "wayne@convex.dev",
-    emailVerificationTime: 1723607151950,
-    image:
-      "https://avatars.githubusercontent.com/u/720186?v=4",
-    name: "Wayne Sutton",
-  },
-  {
-    email: "contact@anjana.dev",
-    emailVerificationTime: 1723639304753,
-    image:
-      "https://avatars.githubusercontent.com/u/5424927?v=4",
-    name: "Anjana Vakil",
-  },
-  {
-    email: "tom@tomredman.ca",
-    emailVerificationTime: 1724094339527,
-    image:
-      "https://avatars.githubusercontent.com/u/4225378?v=4",
-    name: "Tom Redman",
-  }
+  "ian@convex.dev",
+  "wayne@convex.dev",
+  "contact@anjana.dev",
+  "tom@tomredman.ca"
 ];
 const POSTS = [
   {
@@ -42,6 +19,7 @@ const POSTS = [
   The creative startup office buzzed with excitement as they mapped out new possibilities. Jason pointed out key features on the laptop screen while Emily jotted down implementation ideas. The large screen in the office displayed the CMS dashboard, hinting at the powerful new tools they were eager to incorporate. This new addition to Convex’s offerings not only fueled their excitement but also opened up a world of possibilities for their startup’s growth.`,
     imageUrl:
       "https://pleasant-albatross-666.convex.cloud/api/storage/82027b58-1979-435c-a41a-e55205b0a0c5",
+    postId: "c",
     published: true,
     slug: "convexcms",
     summary:
@@ -244,20 +222,35 @@ By the end of the hackathon, their blog platform was not only functional but als
 With Convex.dev, they were confident they could scale their startup quickly and efficiently. What started as a hackathon experiment had now evolved into a startup venture, fueled by the possibilities that Convex unlocked for them. The journey from zero to one was just the beginning, and they were excited to see where Convex would take them next.`,
     imageUrl:
       "https://pleasant-albatross-666.convex.cloud/api/storage/6a651783-cb93-4878-a7c9-784091e560c4",
-    postId: "h",
     published: true,
     slug: "hackathon-startup",
     summary:
       "With Convex.dev, they were confident they could scale their startup quickly and efficiently. ",
     title: "From Hackathon to Startup with Convex",
+  },
+  {
+    authorIndex: 1,
+    content: `Two full-stack developers, Emily and Jason, were deep into building their startup, an innovative platform aimed at simplifying online event management. They had been struggling with the backend infrastructure, trying to find a solution that would allow them to focus more on the frontend and less on managing complex databases and APIs.
+  
+  One day, Emily stumbled upon Convex.dev while researching backend solutions. Excited, she immediately shared it with Jason. They were both impressed by how Convex.dev promised to simplify their workflow by providing a fully managed backend platform that integrated seamlessly with their preferred frontend frameworks. The speed and ease of use were exactly what they needed to accelerate their development process. They could now build, test, and deploy features faster, giving them more time to focus on their startup’s unique value proposition.
+  
+  In their sleek, modern office, Emily and Jason dove into Convex.dev, quickly realizing how it could transform their project. The whiteboard behind them was soon filled with new ideas and plans, as they excitedly mapped out the next steps for their startup, now confident that they had the right tools to bring their vision to life.`,
+    imageUrl:
+      "https://pleasant-albatross-666.convex.cloud/api/storage/19ead46b-c4d6-47df-bd3f-ff007761c6c0",
+    postId: "d",
+    published: true,
+    slug: "discovering-convex",
+    summary:
+      "Two full-stack developers, Emily and Jason, were deep into building their startup, an innovative platform aimed at simplifying online event management. ",
+    title: "Discovering Convex.dev",
   }
 ];
 
 
-export const clearAll = internalMutation({
+export const clearPosts = internalMutation({
   args: {},
   handler: async (ctx) => {
-    ["posts", "users", "versions"].map(async (table) => {
+    ["posts", "versions"].map(async (table) => {
       const oldData = await ctx.db.query(table as TableNames).collect();
       oldData.map(async ({ _id }) => {
         await ctx.db.delete(_id);
@@ -270,13 +263,19 @@ export const clearAll = internalMutation({
 export const reset = internalMutation({
   args: {},
   handler: async (ctx) => {
-    await clearAll(ctx, {});
-    USERS.map(async u => await (ctx.db.insert('users', u)));
-    const userIds = (await ctx.db.query('users').collect()).map((u) => u._id);
-    POSTS.map(async (p, i) => {
-      const authorId = userIds[i % userIds.length]
+    await clearPosts(ctx, {});
+    const userIds: Id<'users'>[] = await Promise.all(
+      USERS.map(async (email) => {
+        const user = await (byEmail(ctx, { email }));
+        if (!user) throw new Error('user not found ' + email);
+        return user._id;
+      })
+    );
+    POSTS.map(async (p) => {
+      const { authorIndex, ...post } = p;
+      const authorId = userIds[authorIndex]
       const postId = await ctx.db.insert('posts',
-        { ...p, authorId, publishTime: Date.now() }
+        { ...post, authorId, publishTime: Date.now() }
       );
       await ctx.db.insert('versions',
         { ...p, postId, authorId, editorId: authorId }

@@ -24,7 +24,9 @@ export const viewer = query({
 export const authoredPosts = query({
   args: { userId: v.id('users') },
   handler: async (ctx, args) => {
-    return await ctx.db.query('posts').withIndex('by_authorId', q => q.eq('authorId', args.userId)).collect()
+    return await ctx.db.query('posts')
+      .withIndex('by_authorId', q => q.eq('authorId', args.userId))
+      .collect()
   }
 })
 
@@ -44,3 +46,14 @@ export const list = query({
     }
   }
 });
+
+export const byEmail = query({
+  args: {
+    email: v.string()
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.query('users')
+      .filter(q => q.eq(q.field('email'), args.email))
+      .unique();
+  }
+})
