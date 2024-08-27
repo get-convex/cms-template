@@ -71,17 +71,18 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const onSaveDraft: SubmitHandler<z.infer<typeof zodSchema>> =
         async (data) => {
             try {
-                const newVersion = await saveDraft({ ...data, published: false });
+                const newVersion = await saveDraft({
+                    ...data,
+                    published: false
+                });
                 if (!newVersion) throw new Error('Error saving draft');
 
                 toast({
                     title: "Draft saved",
-                    description: `This draft is not published yet.`
+                    description: `Saved new draft version ${newVersion._id}. This draft is not published yet.`
                 });
 
-                form.reset(data);
                 if (newVersion.slug !== version?.slug) {
-
                     navigate(`/${newVersion.slug}/edit?v=${newVersion._id}`)
                 } else {
                     setSearchParams((params) => (
@@ -107,7 +108,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                 const updatedPost = await publishPost({
                     versionId: newVersion._id
                 });
-                if (!updatedPost) throw new Error('Error updating post');
+                if (!updatedPost) throw new Error('Error publishing post');
 
                 toast({
                     title: "Post published",
@@ -140,28 +141,27 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                     <Label htmlFor="editing" className="text-primary">Preview</Label>
                 </div>
 
-                {version?.postId && <VersionHistory postId={version.postId}
-                    currentVersion={version._id}
-                    disabled={isDirty} />}
+                {version &&
+                    <VersionHistory
+                        postId={version.postId}
+                        currentVersion={version._id}
+                        isDirty={isDirty} />}
 
                 <div className={`flex gap-2 items-center`}>
-                    <Button variant="secondary" onClick={onReset}>
+                    <Button variant="secondary" type="reset"
+                        onClick={onReset}>
                         {isDirty ? 'Discard' : 'Cancel'}
                     </Button>
 
                     <Button variant="outline"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            form.handleSubmit(onSaveDraft)
-                        }}
+                        type="button"
+                        onClick={form.handleSubmit(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={(e) => {
-                        e.preventDefault();
-                        form.handleSubmit(onPublish)
-                    }}
+                    <Button onClick={form.handleSubmit(onPublish)}
+                        type="button"
                         disabled={!isValid
                             || (form.getValues('published') && !isDirty)}>
                         Publish
@@ -175,7 +175,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                 <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
             </div>)
             : <Form {...form}>
-                <form onSubmit={void form.handleSubmit(onSaveDraft)} >
+                <form onSubmit={form.handleSubmit(onSaveDraft)} >
                     <div className="container">
                         <TextField name="title" form={form} />
                         <TextField name="slug" form={form} />

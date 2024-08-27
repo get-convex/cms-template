@@ -16,13 +16,33 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { useToast } from "../ui/use-toast";
 
-export function VersionHistory({ postId, currentVersion, disabled }: {
+export function VersionHistory({ postId, currentVersion, isDirty }: {
     postId: Id<'posts'>;
     currentVersion: Id<'versions'>;
-    disabled: boolean;
+    isDirty: boolean;
 }) {
-    const history = useQuery(api.versions.getPostHistory, disabled ? 'skip' : { postId });
+    const { toast } = useToast();
+    const [_, setSearchParams] = useSearchParams();
+
+    const history = useQuery(api.versions.getPostHistory, { postId });
     const totalCount = history?.length;
+
+
+    const restoreVersion = (id: Id<'versions'>) => {
+        if (isDirty) {
+            return toast({
+                title: 'Cannot restore history with unsaved edits.',
+                description: 'You have unsaved edits. Save or discard your changes before restoring.',
+                variant: 'destructive'
+            })
+        }
+        setSearchParams((params) => ({ ...params, v: id }));
+        toast({
+            title: `Now editing version ${id}`,
+            description: `Publish to restore this version, or edit and save as a new version`
+        });
+    }
+
 
     return (
         <DropdownMenu>
@@ -45,7 +65,7 @@ export function VersionHistory({ postId, currentVersion, disabled }: {
                             key={v._id}
                             selected={v._id === currentVersion}
                             version={v}
-                            disabled={disabled} />
+                            onRestore={() => restoreVersion(v._id)} />
                     )}
                 </ScrollArea>
             </DropdownMenuContent>
@@ -53,21 +73,12 @@ export function VersionHistory({ postId, currentVersion, disabled }: {
     )
 }
 
-function HistoryDropdownItem({ version, selected, disabled }: {
+function HistoryDropdownItem({ version, selected, onRestore }: {
     version: Doc<'versions'> & { editor: Doc<'users'>, author: Doc<'users'> };
     selected: boolean;
-    disabled: boolean;
+    onRestore: () => void;
 }) {
-    const { toast } = useToast();
-    const [_, setSearchParams] = useSearchParams();
 
-    const restoreVersion = (id: Id<'versions'>) => {
-        setSearchParams((params) => ({ ...params, v: id }));
-        toast({
-            title: `Now editing version ${id}`,
-            description: `Publish to restore this version, or edit and save as a new version`
-        });
-    }
 
 
     const { _id, _creationTime } = version;
@@ -82,8 +93,7 @@ function HistoryDropdownItem({ version, selected, disabled }: {
         <Button
             variant='ghost'
             className={`w-full mx-0 gap-2 flex items-center justify-start  font-normal ${selected ? 'text-convex-yellow stroke-convex-yellow disabled:opacity-100' : ''}`}
-            onClick={() => restoreVersion(_id)}
-            disabled={disabled || selected}
+            onClick={onRestore}
         >
             {selected ? <ArrowRightIcon /> : <ReloadIcon />}
             <div className="text-current">{version.editor.name}</div>

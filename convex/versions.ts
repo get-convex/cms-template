@@ -15,12 +15,12 @@ export const {
 export const saveDraft = mutation({
     args: {
         ...versions.withoutSystemFields,
-        postId: v.optional(v.id('posts'))
+        postId: v.optional(v.union(v.literal(""), v.id('posts')))
     },
     handler: async (ctx, args) => {
         const { postId, editorId, ...data } = args;
         let id = postId;
-        if (!id?.length) {
+        if (!id) {
             const newPost = await createPost(ctx, data);
             id = newPost._id
         }
