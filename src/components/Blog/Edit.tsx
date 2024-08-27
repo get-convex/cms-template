@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEventHandler } from "react";
 import { MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { versionsZod } from "../../../convex/schema";
@@ -28,7 +28,6 @@ const versionDefaults = {
     editorId: '',
     published: false
 }
-
 
 export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     const { toast } = useToast();
@@ -62,13 +61,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
         }
     }, [viewer, getValues, setValue])
 
-    const onReset = () => {
-        form.reset(defaultValues);
-        const back = version ? `/${version.slug}?v=${version._id}` : `/`;
-        navigate(back);
-    };
-
-    const onSaveDraft: SubmitHandler<z.infer<typeof zodSchema>> =
+    const onSaveDraft: SubmitHandler<Schema> =
         async (data) => {
             try {
                 const newVersion = await saveDraft({
@@ -99,7 +92,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
             }
         }
 
-    const onPublish: SubmitHandler<z.infer<typeof zodSchema>> =
+    const onPublish: SubmitHandler<Schema> =
         async (data) => {
             try {
                 const newVersion = await saveDraft({ ...data, published: true });
@@ -126,6 +119,15 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
             }
         };
 
+    // Wrapper for form.handleSubmit to circumvent a react-hook-form issue
+    // that makes TSC throw a @typescript-eslint/no-misused-promises error;
+    // see https://github.com/orgs/react-hook-form/discussions/8020
+    const handleSubmit = function (handler: SubmitHandler<Schema>): MouseEventHandler {
+        return (...args) => void form.handleSubmit(handler)(...args)
+    }
+
+
+
     const { isValid, isDirty } = form.formState;
 
     return (<>
@@ -149,18 +151,22 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
                 <div className={`flex gap-2 items-center`}>
                     <Button variant="secondary" type="reset"
-                        onClick={onReset}>
-                        {isDirty ? 'Discard' : 'Cancel'}
+                        onClick={() => {
+                            const cancelled = !isDirty;
+                            form.reset(defaultValues);
+                            if (cancelled) navigate(-1);
+                        }}>
+                        {isDirty ? 'Reset' : 'Cancel'}
                     </Button>
 
                     <Button variant="outline"
                         type="button"
-                        onClick={form.handleSubmit(onSaveDraft)}
+                        onClick={handleSubmit(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={form.handleSubmit(onPublish)}
+                    <Button onClick={handleSubmit(onPublish)}
                         type="button"
                         disabled={!isValid
                             || (form.getValues('published') && !isDirty)}>
@@ -175,7 +181,7 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
                 <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
             </div>)
             : <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSaveDraft)} >
+                <form>
                     <div className="container">
                         <TextField name="title" form={form} />
                         <TextField name="slug" form={form} />

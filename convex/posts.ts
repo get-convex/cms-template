@@ -12,18 +12,6 @@ export const {
     destroy
 } = crud(posts, query, mutation);
 
-export const getOrCreate = mutation({
-    args: {
-        postId: v.optional(v.id('posts')),
-        content: v.object(posts.withoutSystemFields)
-    },
-    handler: async (ctx, args) => {
-        if (!args.postId) {
-            return await create(ctx, args.content);
-        }
-    }
-})
-
 
 export const publish = mutation({
     args: {

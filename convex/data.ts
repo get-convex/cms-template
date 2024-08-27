@@ -33,7 +33,7 @@ const POSTS = [
     "content": ` "Convex Auth is a library for implementing authentication using your Convex backend.
 
 Check it out [in the Convex docs
-]\(https: //docs.convex.dev/auth/convex-auth) to get started or play with the [example demo](https://labs.convex.dev/auth-example) ([source](https://github.com/get-convex/convex-auth-example)).
+](https: //docs.convex.dev/auth/convex-auth) to get started or play with the [example demo](https://labs.convex.dev/auth-example) ([source](https://github.com/get-convex/convex-auth-example)).
 
 *This article is based on the [launch video
 ](https: //convex.dev/auth).*
@@ -247,12 +247,13 @@ With Convex.dev, they were confident they could scale their startup quickly and 
 export const clearPosts = internalMutation({
   args: {},
   handler: async (ctx) => {
-    ["posts", "versions"].map(async (table) => {
+    await Promise.all(["posts", "versions"].map(async (table) => {
       const oldData = await ctx.db.query(table as TableNames).collect();
-      oldData.map(async ({ _id }) => {
+      await Promise.all(oldData.map(async ({ _id }) => {
         await ctx.db.delete(_id);
-      });
-    })
+      }));
+      console.log(`Deleted ${oldData.length} documents from "${table}" table`)
+    }));
   }
 });
 
@@ -265,19 +266,23 @@ export const reset = internalMutation({
       USERS.map(async (email) => {
         const user = await (byEmail(ctx, { email }));
         if (!user) throw new Error('user not found ' + email);
+        console.log(`Found ${user._id} in "users" table`);
         return user._id;
       })
     );
-    POSTS.map(async (p) => {
+    await Promise.all(POSTS.map(async (p) => {
       const { authorIndex, ...post } = p;
       const authorId = userIds[authorIndex]
       const postId = await ctx.db.insert('posts',
         { ...post, authorId, publishTime: Date.now() }
       );
-      await ctx.db.insert('versions',
+      console.log(`Created document ${postId} in "posts" table`);
+      const versionId = await ctx.db.insert('versions',
         { ...post, postId, authorId, editorId: authorId }
       );
-    });
+      console.log(`Created document ${versionId} in "versions" table`)
+
+    }));
 
   }
 });
