@@ -40,7 +40,10 @@ export function Byline({ author, timestamp }: {
 }
 
 export function PostImage({ imageUrl, title }: Pick<PostOrVersion, 'imageUrl' | 'title'>) {
-    return <img src={imageUrl} className="w-full rounded-lg" alt={`Cover image for blog post ${title}`} />
+    return <img
+        src={imageUrl}
+        className="w-full rounded-lg"
+        alt={`Cover image for blog post ${title}`} />
 }
 
 export function PostPreview({ post }: { post: PostWithAuthor }) {

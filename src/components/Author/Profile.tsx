@@ -14,11 +14,12 @@ const sizeClass = {
 
 export function UserImage({ src, size }: { src?: string; size?: keyof typeof sizeClass }) {
 
-    return src
-        ? <img alt="Profile image" src={src}
+    if (src) {
+        return <img alt="Profile image" src={src}
             className={'relative rounded-full ' + sizeClass[size || 'm']} />
-        : <AvatarIcon className={'relative ' + sizeClass[size || 'm']} />
-
+    } else {
+        return <AvatarIcon className={'relative ' + sizeClass[size || 'm']} />
+    }
 }
 
 export function CompactProfile({ user }: { user: Doc<'users'> }) {

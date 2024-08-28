@@ -2,12 +2,13 @@ import { Input } from "./ui/input";
 import type { FieldPath, FieldValue, FieldValues, UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "./ui/form";
 import { Textarea } from "./ui/textarea";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { UploadButton, type UploadFileResponse } from "@xixixao/uploadstuff/react";
 import "@xixixao/uploadstuff/react/styles.css";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useToast } from "./ui/use-toast";
+import { useEffect, useState } from "react";
 
 interface CommonProps<Schema extends FieldValues> {
     name: FieldPath<Schema>;
@@ -91,30 +92,43 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
     const { toast } = useToast();
 
     const generateUploadUrl = useMutation(api.images.generateUploadUrl);
-    const save = useMutation(api.images.save);
+    const save = useMutation(api.images.saveOptimized);
+
+    const [imageId, setImageId] = useState<Id<'images'>>();
+    const image = useQuery(api.images.read, imageId ? { id: imageId } : 'skip');
+    const { setValue } = form;
+
+    useEffect(() => {
+        if (image) {
+            form.setValue('imageUrl' as FieldPath<Schema>,
+                image.url as FieldValue<Schema>,
+                { shouldDirty: true });
+        }
+
+    }, [image, setValue]);
 
     const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
         const { name, type, size, response } = uploaded[0];
         const { storageId } = (response as { storageId: Id<'_storage'> });
-        const image = await save({
+        const { _id } = await save({
             name,
             type,
             size,
             storageId,
         });
-        if (!image) {
+        if (!_id) {
             toast({
-                title: 'Error saving file',
-                description: `images:save returned null for storageId ${storageId}`
+                title: 'Error saving image file',
+                variant: 'destructive',
+                description: `Null result for storageId ${storageId}`
             })
         } else {
             toast({
                 title: `Saved image file ${name}`,
-                description: `URL: ${image.url}`
+                description: `ID: ${_id}`
             });
-            form.setValue('imageUrl' as FieldPath<Schema>,
-                image.url as FieldValue<Schema>,
-                { shouldDirty: true });
+            setImageId(_id)
+
         }
 
     };
@@ -130,7 +144,8 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
                 onUploadError={(error: unknown) => {
                     toast({
                         title: 'Error uploading image',
-                        description: `Error: ${error}`
+                        description: `Error: ${error}`,
+                        variant: 'destructive'
                     })
                 }}
                 content={(progress) => progress ? 'Uploading...' : 'Upload image'}
