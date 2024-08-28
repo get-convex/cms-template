@@ -20,6 +20,7 @@ import type * as data from "../data.js";
 import type * as http from "../http.js";
 import type * as images from "../images.js";
 import type * as posts from "../posts.js";
+import type * as resize from "../resize.js";
 import type * as users from "../users.js";
 import type * as versions from "../versions.js";
 
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   images: typeof images;
   posts: typeof posts;
+  resize: typeof resize;
   users: typeof users;
   versions: typeof versions;
 }>;
