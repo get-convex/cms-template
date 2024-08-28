@@ -188,23 +188,21 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
             </div>
         </Toolbar >
 
-        {
-            previewing
-                ? (<div className="my-8" >
-                    <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
-                </div>)
-                : <Form {...form}>
-                    <form>
-                        <div className="container">
-                            <TextField name="title" form={form} />
-                            <TextField name="slug" form={form} />
-                            <TextField name="imageUrl" form={form} hidden />
-                            <ImageField name="image" form={form} userId={form.getValues('editorId')} />
-                            <MarkdownField name="summary" rows={3} form={form} />
-                            <MarkdownField name="content" rows={10} form={form} />
-                        </div>
-                    </form>
-                </Form>
+        {previewing
+            ? (<div className="my-8" >
+                <DisplayPost post={{ ...version, ...form.getValues() } as PostOrVersion} />
+            </div>)
+            : <Form {...form}>
+                <form>
+                    <div className="container">
+                        <TextField name="title" form={form} />
+                        <TextField name="slug" form={form} />
+                        <ImageField name="image" form={form} />
+                        <MarkdownField name="summary" rows={3} form={form} />
+                        <MarkdownField name="content" rows={10} form={form} />
+                    </div>
+                </form>
+            </Form>
         }
 
     </>)

@@ -75,7 +75,9 @@ export const users = Table('users', zodToConvexFields(usersZod));
 export const imagesZod = {
   name: zodOptionalString(),
   storageId: zid('_storage'),
-  url: z.string().url()
+  url: z.string().url(),
+  type: zodOptionalString(),
+  size: z.optional(z.number()),
 }
 export const images = Table('images', zodToConvexFields(imagesZod))
 

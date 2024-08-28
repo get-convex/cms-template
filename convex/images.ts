@@ -2,6 +2,7 @@
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 import { viewer as getViewer } from "./users";
+import { images } from "./schema";
 
 export const generateUploadUrl = mutation({
     args: {},
@@ -16,13 +17,7 @@ export const generateUploadUrl = mutation({
 });
 
 export const save = mutation({
-    args: {
-        storageId: v.id('_storage'),
-        authorId: v.id('users'),
-        name: v.string(),
-        type: v.string(),
-        size: v.number()
-    },
+    args: { ...images.withoutSystemFields, url: v.optional(v.string()) },
     handler: async (ctx, args) => {
         // Verify the user is still authenticated
         const viewer = await getViewer(ctx, {});
