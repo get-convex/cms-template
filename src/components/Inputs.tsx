@@ -99,13 +99,13 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
     const { setValue } = form;
 
     useEffect(() => {
-        if (image) {
-            form.setValue('imageUrl' as FieldPath<Schema>,
+        if (image?.url) {
+            setValue('imageUrl' as FieldPath<Schema>,
                 image.url as FieldValue<Schema>,
                 { shouldDirty: true });
         }
 
-    }, [image, setValue]);
+    }, [image?.url, setValue]);
 
     const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
         const { name, type, size, response } = uploaded[0];
@@ -144,7 +144,7 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
                 onUploadError={(error: unknown) => {
                     toast({
                         title: 'Error uploading image',
-                        description: `Error: ${error}`,
+                        description: `Error: ${error as string}`,
                         variant: 'destructive'
                     })
                 }}
@@ -154,4 +154,4 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
     </div>
 
     )
-};
+}

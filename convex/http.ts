@@ -8,13 +8,12 @@ auth.addHttpRoutes(http);
 
 
 http.route({
-    pathPrefix: '/images/',
+    pathPrefix: '/',
     method: "GET",
     handler: httpAction(async (ctx, request) => {
-        const { url, json } = request
-        const { body: { storageId } } = await json();
+        const { body: { storageId } } = await request.json();
 
-        console.log(`received request.url ${url}`)
+        console.log(`received request.url ${request.url}`)
         console.log(`received request.body.storageId ${storageId}`)
 
         return new Response(null, {

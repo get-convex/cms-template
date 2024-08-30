@@ -16,7 +16,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
 import { Toolbar } from "../Toolbar";
 import type { Doc } from "../../../convex/_generated/dataModel";
-import { TrashIcon } from "@radix-ui/react-icons";
 
 const versionDefaults = {
     postId: '',

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, internalMutation } from "./_generated/server";
+import { query, mutation } from "./_generated/server";
 import { auth } from "./auth";
 import { users } from "./schema";
 import { crud } from "convex-helpers/server";
@@ -20,23 +20,6 @@ export const viewer = query({
   }
 });
 
-export const optimizeImage = internalMutation({
-  args: { userId: v.id('users') },
-  handler: async (ctx, args) => {
-
-    const user = await read(ctx, { id: args.userId });
-    if (!user) return null;
-
-    // If this user has an image and is an author, optimize their image
-    if (user.image && !user.image.endsWith('.webp')) {
-      const isAuthor = (await authoredPosts(ctx, { userId: user._id })).length;
-      if (isAuthor) {
-
-      }
-
-    }
-  },
-});
 
 
 export const authoredPosts = query({
