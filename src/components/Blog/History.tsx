@@ -47,9 +47,9 @@ export function VersionHistory({ postId, currentVersion, isDirty }: {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="mx-0 flex gap-2 items-center">
+                <Button variant="outline" className="mx-0 flex gap-1 sm:gap-2 items-center">
                     <ClockIcon />
-                    <p>History</p>
+                    <span>History</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

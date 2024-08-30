@@ -16,6 +16,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { VersionHistory } from "@/components/Blog/History";
 import { Toolbar } from "../Toolbar";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 const versionDefaults = {
     postId: '',
@@ -145,30 +146,31 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
     return (<>
         <Toolbar>
 
-            <div className="flex flex-row justify-between items-center">
+            <div className="w-full flex max-sm:flex-col sm:flex-row gap-2 justify-between items-center">
 
-                <div className="flex gap-2 items-center">
+                <div className="flex flex-grow flex-row gap-1 sm:gap-2 justify-between items-center">
+                    <div className="flex flex-row gap-1 items-center">
+                        <Switch id="editing"
+                            checked={previewing}
+                            onCheckedChange={(checked) => setPreviewing(checked)} />
+                        <Label htmlFor="editing" className="text-primary">Preview</Label>
+                    </div>
 
-                    <Switch id="editing"
-                        checked={previewing}
-                        onCheckedChange={(checked) => setPreviewing(checked)} />
-                    <Label htmlFor="editing" className="text-primary">Preview</Label>
+                    {version &&
+                        <VersionHistory
+                            postId={version.postId}
+                            currentVersion={version._id}
+                            isDirty={isDirty} />}
                 </div>
 
-                {version &&
-                    <VersionHistory
-                        postId={version.postId}
-                        currentVersion={version._id}
-                        isDirty={isDirty} />}
-
-                <div className={`flex gap-2 items-center`}>
+                <div className={`flex flex-row gap-1 sm:gap-2 items-center justify-between`}>
                     <Button variant="secondary" type="reset"
                         onClick={() =>
                             isDirty ?
                                 form.reset(defaultValues)
                                 : navigate(`/${version ? version.slug : ''}`)
                         }>
-                        {isDirty ? 'Reset' : 'Cancel'}
+                        <span>{isDirty ? 'Reset' : 'Cancel'}</span>
                     </Button>
 
                     <Button variant="outline"

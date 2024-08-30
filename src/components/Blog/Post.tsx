@@ -83,7 +83,7 @@ export function DisplayPost({ post }: {
     post: PostOrVersion
 }) {
     return post && (<article className="container" >
-        <div className="mb-4 grid grid-cols-2 items-start gap-2">
+        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 items-start gap-2">
             <div className="flex flex-col h-full gap-8">
                 <PageTitle title={post.title} />
                 {post.author &&

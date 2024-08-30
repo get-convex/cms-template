@@ -20,7 +20,7 @@ export function AuthedUserMenu({ user }: { user: Doc<'users'> }) {
   const userName = user.name || user.email
   return (
     <div className="flex items-center gap-2 text-sm font-medium">
-      {userName}
+      <span className="max-sm:hidden">{userName}</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full" >

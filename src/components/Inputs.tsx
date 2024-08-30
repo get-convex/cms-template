@@ -135,8 +135,8 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
 
     return (<div className="grid grid-cols-4 gap-x-4 items-center">
         <TextField name={"imageUrl" as FieldPath<Schema>} form={form}
-            itemClass="space-y-2 grid grid-cols-subgrid col-span-3 gap-4 mb-4 items-center" controlClass="col-span-2 row-span-2" />
-        <div className="col-start-4 col-span-1 pb-2">
+            itemClass="space-y-2 grid grid-cols-subgrid col-span-4 sm:col-span-3 gap-4 mb-4 items-center" controlClass="col-span-3 sm:col-span-2 row-span-2" />
+        <div className="col-start-2 sm:col-start-4 col-span-1 pb-2">
             <UploadButton
                 uploadUrl={generateUploadUrl}
                 fileTypes={[".png", ".gif", ".jpeg", ".jpg"]}

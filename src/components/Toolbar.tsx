@@ -6,7 +6,7 @@ export function Toolbar({ children }: {
 }) {
     return <div className="mb-6">
         <Authenticated>
-            <div className='absolute bottom-0 left-0 z-10 w-full p-4 bg-convex-purple border-b' >
+            <div className='absolute bottom-0 left-0 z-10 w-full py-4 px-0 bg-convex-purple border-b' >
                 <div className="container dark">
                     {children}
                 </div>
