@@ -11,7 +11,7 @@ export function PageTitle({ title, tagline }:
 
     return (<div className="flex flex-col gap-2">
         {title &&
-            <h1 className="text-xl font-semibold md:text-2xl py-2">{title}</h1>}
+            <h1 className="text-xl font-semibold sm:text-2xl lg:text-4xl py-2">{title}</h1>}
         {tagline && <p className="sm:block text-sm text-muted-foreground py-2">
             {tagline}
         </p>}

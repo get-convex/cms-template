@@ -24,7 +24,7 @@ const Component: FC = () => {
 
         <div className="container">
             <PageTitle title="" tagline="A minimalist CMS / Blog open-source template created with Convex, Vite, React and shadcn/ui." />
-            {posts && <PreviewGallery posts={posts} />}
+            <div className="mt-4">{posts && <PreviewGallery posts={posts} />}</div>
         </div>
     </>);
 }

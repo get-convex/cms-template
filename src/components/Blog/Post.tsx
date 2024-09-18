@@ -3,6 +3,7 @@ import { StyledMarkdown } from "../Markdown";
 import { Link } from "react-router-dom";
 import { UserImage } from "../Author/Profile";
 import type { Id, Doc } from "../../../convex/_generated/dataModel";
+import { FileTextIcon } from "@radix-ui/react-icons";
 
 export type PostWithAuthor = Doc<'posts'> & {
     author?: Doc<'users'>
@@ -38,18 +39,25 @@ export function Byline({ author, timestamp }: {
         </div>)
 }
 
-export function PostImage({ imageUrl, title }: Pick<PostOrVersion, 'imageUrl' | 'title'>) {
-    return <img
-        src={imageUrl}
-        className="w-full rounded-lg"
-        alt={`Cover image for blog post ${title}`} />
+export function PostImage({ imageUrl, title }: Partial<Pick<PostOrVersion, 'imageUrl' | 'title'>>) {
+    if (imageUrl) {
+        return <img
+            src={imageUrl}
+            className="w-full rounded-lg"
+            alt={`Cover image for blog post ${title || ''}`} />
+    } else {
+        return <div className="bg-gradient-to-br from-convex-yellow to-convex-purple col-span-1 rounded-lg flex items-center justify-center">
+            <FileTextIcon className="w-20 h-20" />
+        </div>
+    }
+
 }
 
 export function PostPreview({ post }: { post: PostWithAuthor }) {
-    return post && (<div className={`border border-neutral-n10 p-5 md:pr-4  lg:pr-4 grid grid-cols-1 md:grid-cols-2 gap-6 ${post.published ? '' : 'italic bg-muted text-muted-foreground'
+    return post && (<div className={`p-5 md:pr-4  lg:pr-4 grid grid-cols-1 md:grid-cols-3 gap-6 ${post.published ? '' : 'italic bg-muted text-muted-foreground'
         }`}>
-        {post.imageUrl && <PostImage imageUrl={post.imageUrl} title={post.title} />}
-        <div className={`flex flex-col gap-6 ${post.imageUrl ? 'col-span-1' : 'md:col-span-2'} `}>
+        <PostImage imageUrl={post.imageUrl} title={post.title} />
+        <div className={`flex flex-col gap-6 ${'md:col-span-2'} `}>
             <div className="flex flex-row items-center gap-3">
                 <div className="flex flex-col gap-3">
                     <div className="line-clamp-2 text-2xl leading-tight decoration-neutral-n6 underline-offset-4 hover:underline">
@@ -82,25 +90,26 @@ export function DisplayPost({ post }: {
     post: PostOrVersion
 }) {
     return post && (<article className="container" >
-        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 items-start gap-2">
-            <div className="flex flex-col h-full gap-8">
+        <div className="mb-4 grid grid-cols-1 items-start gap-2">
+            <div className="flex flex-col h-full gap-8 px-0 sm:px-20 lg:px-32">
                 <PageTitle title={post.title} />
                 {post.author &&
                     <Byline author={post.author}
                         timestamp={post.publishTime} />}
 
-                <p className="text-muted-foreground italic">
-                    {post.summary}
-                </p>
+                {post.summary && <p className="text-muted-foreground italic">
+                    <StyledMarkdown content={post.summary} />
+                </p>}
             </div>
-            <div>
+            <div className="my-4">
                 {post.imageUrl &&
                     <PostImage imageUrl={post.imageUrl} title={post.title} />}
             </div>
+
+            <div className="px-0 sm:px-20 lg:px-32">
+                <StyledMarkdown content={post.content} />
+            </div>
         </div>
-
-
-        <StyledMarkdown content={post.content} />
 
     </article>)
 }
