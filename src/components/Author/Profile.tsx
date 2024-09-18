@@ -3,6 +3,7 @@ import type { Doc } from "../../../convex/_generated/dataModel";
 import { Link } from "react-router-dom";
 import { StyledContent, StyledMarkdown } from "../Markdown";
 import { PreviewGallery } from "../Blog/Post";
+import { PageTitle } from "../PageTitle";
 
 const sizeClass = {
     's': `h-5 w-5`,
@@ -23,7 +24,7 @@ export function UserImage({ src, size }: { src?: string; size?: keyof typeof siz
 }
 
 export function CompactProfile({ user }: { user: Doc<'users'> }) {
-    return (<Link to={`/authors/${user._id}`}
+    return (<Link to={`/authors/${user.slug}`}
         className="flex flex-row items-center gap-4">
         <UserImage src={user.image} />
         <div className="flex flex-col gap-2">
@@ -41,7 +42,7 @@ export function AuthorProfile({ user, posts }: {
         <div className="flex flex-row items-center gap-4 mb-4 h-">
             <UserImage src={user.image} size="l" />
             <div className="flex flex-col items-start gap-2">
-                <h1 className="text-2xl">{user.name || `User ${user._id}`}</h1>
+                <PageTitle title={user.name || `User ${user._id}`} />
                 {user.tagline && <StyledMarkdown content={user.tagline} />}
                 <StyledContent>
                     <div className="flex flex-row gap-4 text-sm">
@@ -74,7 +75,7 @@ export function AuthorProfile({ user, posts }: {
 }
 
 export function AuthorsList({ users }: { users: Doc<'users'>[] }) {
-    return (<div className="container">
+    return (<div className="container flex flex-col gap-4">
         {users.map(u => <CompactProfile key={u._id} user={u} />)}
     </div>);
 }

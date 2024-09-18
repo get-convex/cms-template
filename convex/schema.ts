@@ -62,6 +62,7 @@ export const usersZod = {
   tagline: zodOptionalString(z.string().max(100, '100 characters max')),
   bio: zodOptionalString(z.string().max(500, '500 characters max')),
   name: zodOptionalString(),
+  slug: zodOptionalString(),
   email: zodOptionalString(z.string().email()),
   emailVerificationTime: z.optional(z.number()),
   phone: zodOptionalString(),

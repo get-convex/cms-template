@@ -1,6 +1,6 @@
 import { internalMutation } from "./_generated/server";
 import type { Id, TableNames } from "./_generated/dataModel";
-import { byEmail } from "./users";
+import { byEmail, getOrSetSlug } from "./users";
 
 
 const USERS = [
@@ -267,6 +267,8 @@ export const reset = internalMutation({
         const user = await (byEmail(ctx, { email }));
         if (!user) throw new Error('user not found ' + email);
         console.log(`Found ${user._id} in "users" table`);
+        const slug = await getOrSetSlug(ctx, { id: user._id });
+        console.log(`Author slug: ${slug}`);
         return user._id;
       })
     );

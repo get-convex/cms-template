@@ -15,7 +15,6 @@ import {
   CodeIcon,
   ExternalLinkIcon,
   MagicWandIcon,
-  PlayIcon,
   StackIcon,
 } from "@radix-ui/react-icons";
 import { ReactNode } from "react";
@@ -41,13 +40,13 @@ export function GetStartedDialog({ children }: { children: ReactNode }) {
   );
 }
 
-function GetStartedContent() {
+export function GetStartedContent() {
   return (
-    <div className="overflow-y-auto">
-      <p className="text-muted-foreground mb-2">
+    <div className="">
+      <p className="text-foreground py-2">
         This template is a starting point for building your content-driven fullstack web application.
       </p>
-      <p className="text-muted-foreground italic mb-2">
+      <p className="text-foreground italic py-4">
         To prevent abuse, the content in the public demo app hosted at{" "}
         <a
           href="https://www.convex-cms.com/"
@@ -65,15 +64,8 @@ function GetStartedContent() {
         {" "}defined in <Code>convex/crons.ts</Code>. You can edit & create new posts, but your changes will be deleted within 24 hours.
 
       </p>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex gap-2">
-              <PlayIcon /> Play with the app
-            </CardTitle>
-          </CardHeader>
-          <CardContent>Close this dialog to see the app in action.</CardContent>
-        </Card>
+      <h2 className="mt-6 mb-3 font-semibold">Explore the code</h2>
+      <div className="grid gap-4 md:grid-cols-3 mb-4">
         <Card>
           <CardHeader>
             <CardTitle className="flex gap-2">

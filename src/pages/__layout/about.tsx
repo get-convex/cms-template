@@ -1,8 +1,12 @@
+import { GetStartedContent } from '@/components/GetStarted/GetStartedDialog'
 import { PageTitle } from '@/components/PageTitle'
 
 export default function AboutPage() {
-    <PageTitle
-        title='About'
-        tagline="What is this site about? Is it about things? Let's find out!"
-    />
+    return (<div className="container">
+        <PageTitle
+            title='About'
+            tagline="A minimalist CMS/Blog open-source template created with Convex, Vite, React and shadcn/ui."
+        />
+        <GetStartedContent />
+    </div>);
 }

@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { GetStartedDialog } from "@/components/GetStarted/GetStartedDialog";
 import { Link, Outlet } from "react-router-dom";
 import { UserMenu } from "@/components/UserMenu";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,21 +12,12 @@ export default function Layout() {
                 <nav className="container w-full justify-between flex flex-row items-center gap-6">
                     <div className="flex items-center gap-6 md:gap-10">
                         <Link to="/">
-                            <h1 className="text-2xl font-semibold">Convex Blog</h1>
+                            <h1 className="text-3xl font-semibold">Convex Blog</h1>
                         </Link>
                         <div className="flex items-center gap-4 text-sm">
-                            <GetStartedDialog>
-                                <button className="text-muted-foreground transition-colors hover:text-foreground">
-                                    Help
-                                </button>
-                            </GetStartedDialog>
-                            <a
-                                href="https://docs.convex.dev"
-                                className="text-muted-foreground transition-colors hover:text-foreground"
-                                target="_blank"
-                            >
-                                Docs
-                            </a>
+                            <Link to="/" className="text-muted-foreground transition-colors hover:text-foreground">Posts</Link>
+                            <Link to="/authors" className="text-muted-foreground transition-colors hover:text-foreground">Authors</Link>
+                            <Link to="/about" className="text-muted-foreground transition-colors hover:text-foreground">About</Link>
                         </div>
                     </div>
                     <UserMenu />

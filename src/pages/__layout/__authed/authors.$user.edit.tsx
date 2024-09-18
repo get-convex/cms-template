@@ -3,15 +3,14 @@ import { useQuery } from "convex/react";
 import { useParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
 import { EditableProfile } from "@/components/Author/Edit";
-import type { Id } from "../../../../convex/_generated/dataModel";
 
 export default function EditUserPage() {
 
-    const { user: userId } = useParams();
+    const { user: userSlug } = useParams();
 
-    const user = useQuery(api.users.read, {
-        id: userId! as Id<'users'>
-    });
+    const user = useQuery(api.users.bySlug, userSlug ? {
+        slug: userSlug
+    } : 'skip');
     const viewer = useQuery(api.users.viewer);
 
     if (user === undefined || viewer === undefined) return <Message text="Loading..." />

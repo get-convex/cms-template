@@ -22,13 +22,12 @@ export function Byline({ author, timestamp }: {
 }) {
     // If no timestamp given, this is a draft/preview; show today's date
     const date = new Date(timestamp || Date.now()).toDateString();
-    const authorSlug = author?._id;
 
     return (author &&
         <div className="flex items-center gap-2">
             <UserImage src={author.image} />
             <div className="flex flex-col">
-                <Link to={`/authors/${authorSlug}`}
+                <Link to={`/authors/${author.slug}`}
                     className="text-sm underline-offset-2 hover:underline">
                     {author.name}
                 </Link>

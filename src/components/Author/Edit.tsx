@@ -96,6 +96,7 @@ export function EditableProfile({ user }: { user: Doc<'users'> }) {
                     <form onSubmit={submitHandler} >
                         <TextField name="name" form={form} />
                         <TextField name="image" form={form} />
+                        <TextField name="slug" form={form} />
                         <TextField name="url" form={form} />
                         <TextField name="email" form={form} />
                         <MarkdownField name="tagline" rows={1} form={form} />

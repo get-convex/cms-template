@@ -2,7 +2,6 @@ import { Message } from "@/components/PageTitle";
 import { useQuery } from "convex/react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
-import type { Id } from "../../../../convex/_generated/dataModel";
 import { AuthorProfile } from "@/components/Author/Profile";
 import { Toolbar } from "@/components/Toolbar";
 import { Button } from "@/components/ui/button";
@@ -10,15 +9,15 @@ import { Pencil1Icon } from "@radix-ui/react-icons";
 
 export default function UserPage() {
 
-    const { user: userId } = useParams();
+    const { user: userSlug } = useParams();
 
     const viewer = useQuery(api.users.viewer);
-    const user = useQuery(api.users.read, {
-        id: userId! as Id<'users'>
-    });
-    const posts = useQuery(api.users.authoredPosts, {
-        userId: userId! as Id<'users'>
-    })
+    const user = useQuery(api.users.bySlug, userSlug ? {
+        slug: userSlug
+    } : 'skip');
+    const posts = useQuery(api.users.authoredPosts, user ? {
+        userId: user._id
+    } : 'skip');
     const viewerIsUser = viewer?._id === user?._id;
 
     if (user === undefined) return <Message text="Loading..." />
@@ -28,7 +27,7 @@ export default function UserPage() {
             ? <>
                 {viewerIsUser && (<Toolbar>
                     <div className="w-full flex justify-end">
-                        <Link to={`/authors/${user._id}/edit`} className={`flex gap-2 items-center`} >
+                        <Link to={`/authors/${user.slug}/edit`} className={`flex gap-2 items-center`} >
                             <Button>
                                 Edit
                                 <Pencil1Icon className="h-6 w-6 pl-2" />

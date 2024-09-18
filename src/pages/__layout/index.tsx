@@ -6,6 +6,7 @@ import { Toolbar } from '@/components/Toolbar'
 import { Button } from '@/components/ui/button'
 import { FilePlusIcon } from '@radix-ui/react-icons'
 import { Link } from 'react-router-dom'
+import { PageTitle } from '@/components/PageTitle'
 
 const Component: FC = () => {
     const posts = useQuery(api.posts.list);
@@ -20,7 +21,9 @@ const Component: FC = () => {
                 </Link>
             </div>
         </Toolbar>
+
         <div className="container">
+            <PageTitle title="" tagline="A minimalist CMS / Blog open-source template created with Convex, Vite, React and shadcn/ui." />
             {posts && <PreviewGallery posts={posts} />}
         </div>
     </>);

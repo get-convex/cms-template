@@ -53,3 +53,35 @@ export const byEmail = query({
       .unique();
   }
 })
+
+export const getOrSetSlug = mutation({
+  args: { id: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await read(ctx, { id: args.id })
+    if (user === null) return null;
+    if (user.slug) return user.slug;
+
+    let slug;
+    if (user.name) {
+      slug = encodeURIComponent(user.name
+        .toLowerCase()
+        .replaceAll(" ", "-"));
+    } else if (user.email) {
+      slug = encodeURIComponent(user.email);
+    } else {
+      slug = user._id;
+    }
+    await update(ctx, { id: user._id, patch: { slug } });
+    return slug;
+  }
+
+})
+
+export const bySlug = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db.query('users')
+      .filter(q => q.eq(q.field('slug'), args.slug))
+      .unique();
+  }
+})
