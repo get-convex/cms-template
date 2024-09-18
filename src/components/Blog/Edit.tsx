@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useEffect, useState, type MouseEventHandler } from "react";
+import { useEffect, useState, type FormEventHandler } from "react";
 import { ImageField, MarkdownField, TextField } from "@/components/Inputs";
 import { Button } from "@/components/ui/button";
 import { versionsZod } from "../../../convex/schema";
@@ -131,10 +131,9 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
             }
         };
 
-    // Wrapper for form.handleSubmit to circumvent a react-hook-form issue
-    // that makes TSC throw a @typescript-eslint/no-misused-promises error;
+    // Wrapper for form.handleSubmit to avoid no-misused-promises error;
     // see https://github.com/orgs/react-hook-form/discussions/8020
-    const handleSubmit = function (handler: SubmitHandler<Schema>): MouseEventHandler {
+    const getSubmitHandler = function (handler: SubmitHandler<Schema>): FormEventHandler {
         return (...args) => void form.handleSubmit(handler)(...args)
     }
 
@@ -174,12 +173,12 @@ export function EditablePost({ version }: { version: Doc<'versions'> | null }) {
 
                     <Button variant="outline"
                         type="button"
-                        onClick={handleSubmit(onSaveDraft)}
+                        onClick={getSubmitHandler(onSaveDraft)}
                         disabled={!isValid || !isDirty}>
                         Save draft
                     </Button>
 
-                    <Button onClick={handleSubmit(onPublish)}
+                    <Button onClick={getSubmitHandler(onPublish)}
                         type="button"
                         disabled={!isValid
                             || (form.getValues('published') && !isDirty)}>
