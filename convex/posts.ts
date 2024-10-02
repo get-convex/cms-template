@@ -199,3 +199,11 @@ export const isSlugTaken = query({
         }
     }
 })
+
+export const searchContent = query({
+    args: { searchTerm: v.string() },
+    handler: async (ctx, args) => await ctx.db.query('posts')
+        .withSearchIndex('search_content',
+            q => q.search("content", args.searchTerm))
+        .collect()
+})

@@ -89,7 +89,11 @@ export default defineSchema({
   posts: posts.table
     .index("by_slug", ["slug"])
     .index("by_published", ["published", "publishTime", "updateTime"])
-    .index("by_authorId", ["authorId"]),
+    .index("by_authorId", ["authorId"])
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["postId"],
+    }),
   versions: versions.table
     .index("by_postId", ["postId"])
     .index("by_slug", ["slug"]), // to lookup old slugs for redirects

@@ -1,15 +1,19 @@
-import type { FC } from 'react'
 import { PreviewGallery } from '@/components/Blog/Post'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { Toolbar } from '@/components/Toolbar'
 import { Button } from '@/components/ui/button'
 import { FilePlusIcon } from '@radix-ui/react-icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { PageTitle } from '@/components/PageTitle'
+import type { FC } from 'react'
 
 const Component: FC = () => {
-    const posts = useQuery(api.posts.list);
+    const [searchParams, _] = useSearchParams();
+    const searchTerm = searchParams.get('s');
+    const searchResults = useQuery(api.posts.searchContent, searchTerm ? { searchTerm } : 'skip')
+    const allPosts = useQuery(api.posts.list);
+
     return (<>
         <Toolbar>
             <div className="w-full flex justify-end">
@@ -24,7 +28,11 @@ const Component: FC = () => {
 
         <div className="container">
             <PageTitle title="" tagline="A minimalist CMS / Blog open-source template created with Convex, Vite, React and shadcn/ui." />
-            <div className="mt-4">{posts && <PreviewGallery posts={posts} />}</div>
+            <div className="mt-4">
+                {searchTerm
+                    ? searchResults && <PreviewGallery posts={searchResults} />
+                    : allPosts && <PreviewGallery posts={allPosts} />}
+            </div>
         </div>
     </>);
 }
