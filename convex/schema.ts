@@ -39,6 +39,7 @@ export const postContentZod = {
   imageUrl: zodOptionalUrl,
   authorId: zid("users"),
   published: z.boolean(),
+  search: zodOptionalString(), // aggregates all searchable fields
 }
 export const postsZod = {
   ...postContentZod,
@@ -90,9 +91,9 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_published", ["published", "publishTime", "updateTime"])
     .index("by_authorId", ["authorId"])
-    .searchIndex("search_content", {
-      searchField: "content",
-      filterFields: ["postId"],
+    .searchIndex("search_all", {
+      searchField: "search",
+      filterFields: ['published']
     }),
   versions: versions.table
     .index("by_postId", ["postId"])

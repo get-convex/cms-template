@@ -1,16 +1,47 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import schema from "./schema";
+import { mutation as rawMutation, query } from "./_generated/server";
+import schema, { posts } from "./schema";
 import { crud } from "convex-helpers/server/crud";
-import { viewer as getViewer } from "./users";
-import type { Doc } from "./_generated/dataModel";
+import { Triggers } from "convex-helpers/server/triggers";
+import { DataModel, type Doc } from "./_generated/dataModel";
+import { customMutation } from "convex-helpers/server/customFunctions";
 
+
+
+// Use Triggers to keep aggregated 'search' field up-to-date
+// by automatically updating it whenever a post is created/updated.
+// See also: https://stack.convex.dev/triggers#denormalizing-a-field
+const triggers = new Triggers<DataModel>();
+
+triggers.register("posts", async (ctx, change) => {
+    console.log('Triggered on posts with change: ', change)
+    if (change.newDoc) { // A post has been inserted or updated;
+        // aggregate the relevant searchable text fields
+        // into a single 'search' string to be indexed
+        const { title, content, summary, slug } = change.newDoc
+        let newSearch = [title, content, summary, slug].join(' ');
+
+        // if the search aggregate has changed, update it
+        if (change.newDoc.search !== newSearch) {
+            console.log(`Triggering search field update for ${slug} (post ${change.id})`)
+            await ctx.db.patch(change.id, { search: newSearch });
+        }
+    }
+});
+// Wrap the default Convex mutation function to be aware of our trigger
+const mutation = customMutation(rawMutation, triggers.customFunctionWrapper());
+
+
+// Use the trigger-wrapped mutation function to generate CRUD helpers.
+// See also: https://stack.convex.dev/crud-and-rest
 export const {
     create,
     read,
     update,
     destroy
-} = crud(schema, 'posts');
+} = crud(schema, 'posts', query, mutation);
+
+
 
 export const publish = mutation({
     args: {
@@ -24,6 +55,7 @@ export const publish = mutation({
         const { _id, _creationTime, editorId: _editorId,
             postId, ...content } = version;
         const oldPost = await ctx.db.get(postId);
+
         if (!oldPost) {
             throw new Error(`Post ${version.postId} not found`);
         }
@@ -33,7 +65,7 @@ export const publish = mutation({
             publishTime: oldPost.publishTime || Date.now(),
             updateTime: Date.now(),
         }
-        await update(ctx, { id: postId, patch })
+        await ctx.db.patch(postId, patch);
         return read(ctx, { id: postId });
     }
 })
@@ -45,11 +77,11 @@ export const list = query({
         // If the user is authenticated, include unpublished drafts
         // by omitting the index filter. Otherwise, use the index
         // filter to only return published posts
-        const viewer = await getViewer(ctx, {});
+        const authed = await ctx.auth.getUserIdentity()
 
         const posts = await ctx.db.query("posts")
             .withIndex('by_published',
-                viewer ? undefined : q => q.eq('published', true)
+                authed ? undefined : q => q.eq('published', true)
             )
             .order("desc")
             .collect();
@@ -119,8 +151,8 @@ export const getBySlug = query({
         }
         if (!post) return null; // The slug is unknown
 
-        const viewer = await getViewer(ctx, {});
-        if (!viewer && !post.published) {
+        const authed = await ctx.auth.getUserIdentity()
+        if (!authed && !post.published) {
             // This is an unpublished draft, unauthenticated
             // user does not have permission to view it
             return null;
@@ -199,12 +231,20 @@ export const isSlugTaken = query({
     }
 })
 
-export const searchContent = query({
+export const search = query({
     args: { searchTerm: v.string() },
     handler: async (ctx, args) => {
+        const authed = await ctx.auth.getUserIdentity()
+
         const results = await ctx.db.query('posts')
-            .withSearchIndex('search_content',
-                q => q.search("content", args.searchTerm))
+            .withSearchIndex('search_all', q => {
+                const search = q
+                    .search("search", args.searchTerm)
+
+                // Search public + draft posts if user is authed;
+                // otherwise, add filter to only search public posts
+                return authed ? search : search.eq('published', true)
+            })
             .collect();
 
         return Promise.all(

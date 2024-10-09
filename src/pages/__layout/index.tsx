@@ -12,7 +12,7 @@ import { useStableQuery } from '@/lib/utils'
 const Component: FC = () => {
     const [searchParams, _] = useSearchParams();
     const searchTerm = searchParams.get('s');
-    const searchResults = useStableQuery(api.posts.searchContent, searchTerm ? { searchTerm } : 'skip')
+    const searchResults = useStableQuery(api.posts.search, searchTerm ? { searchTerm } : 'skip')
     const allPosts = useQuery(api.posts.list);
 
     return (<>
