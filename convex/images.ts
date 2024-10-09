@@ -11,7 +11,7 @@ export const {
     read,
     update,
     destroy
-} = crud(schema, 'images');
+} = crud(schema, 'images', query, mutation);
 
 
 
