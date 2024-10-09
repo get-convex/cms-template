@@ -6,7 +6,7 @@ export function PageTitle({ title, tagline }:
 
     const location = useLocation;
     useEffect(() => {
-        document.title = `Convex CMS${title ? ` | ${title}` : ''}`;
+        document.title = `Convex Blog${title ? ` | ${title}` : ''}`;
     }, [location, title])
 
     return (<div className="flex flex-col gap-2">
