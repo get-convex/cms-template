@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { UserMenu } from "@/components/UserMenu";
 import { Search } from "@/components/Search";
 import type { ReactNode } from "react";
 
 
 export function Header() {
+    const location = useLocation();
     return <header className="sticky top-0 z-10 flex min-h-20 border-b bg-background/80 backdrop-blur">
         <nav className="container w-full justify-between flex flex-row items-center gap-6">
             <div className="flex items-center gap-6 md:gap-10">
@@ -18,7 +19,7 @@ export function Header() {
                 </div>
             </div>
 
-            <Search />
+            {location.pathname === '/' && <Search />}
 
             <UserMenu />
         </nav>

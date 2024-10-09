@@ -32,7 +32,7 @@ const Component: FC = () => {
             <div className="mt-4">
                 {searchTerm
                     ? <PreviewGallery posts={searchResults || []} />
-                    : <PreviewGallery posts={allPosts || []} />}
+                    : allPosts && <PreviewGallery posts={allPosts} />}
             </div>
         </div>
     </>);
