@@ -97,9 +97,9 @@ export function DisplayPost({ post }: {
                     <Byline author={post.author}
                         timestamp={post.publishTime} />}
 
-                {post.summary && <p className="text-muted-foreground italic">
+                {post.summary && <div className="text-muted-foreground italic">
                     <StyledMarkdown content={post.summary} />
-                </p>}
+                </div>}
             </div>
             <div className="my-4">
                 {post.imageUrl &&
