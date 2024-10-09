@@ -10,7 +10,7 @@ auth.addHttpRoutes(http);
 http.route({
     pathPrefix: '/',
     method: "GET",
-    handler: httpAction(async (ctx, request) => {
+    handler: httpAction(async (_, request) => {
         const { body: { storageId } } = await request.json();
 
         console.log(`received request.url ${request.url}`)

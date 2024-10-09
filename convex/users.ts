@@ -9,7 +9,7 @@ export const {
   read,
   update,
   destroy
-} = crud(schema, 'users');
+} = crud(schema, 'users', query, mutation);
 
 
 export const viewer = query({

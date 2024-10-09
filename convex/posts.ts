@@ -19,7 +19,7 @@ triggers.register("posts", async (ctx, change) => {
         // aggregate the relevant searchable text fields
         // into a single 'search' string to be indexed
         const { title, content, summary, slug } = change.newDoc
-        let newSearch = [title, content, summary, slug].join(' ');
+        const newSearch = [title, content, summary, slug].join(' ');
 
         // if the search aggregate has changed, update it
         if (change.newDoc.search !== newSearch) {

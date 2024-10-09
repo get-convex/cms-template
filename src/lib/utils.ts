@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useRef } from 'react';
 import { useQuery } from "convex/react";
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
@@ -40,18 +40,6 @@ export function showTimeAgoShort(created: number) {
   const daysAgo = Math.round(hoursAgo / 24)
   return `${daysAgo}d ago`
 }
-
-
-// Debounce user input for e.g. search
-export function useDebounce(effect: any, dependencies: React.DependencyList, delay: number) {
-  const callback = useCallback(effect, dependencies);
-
-  useEffect(() => {
-    const timeout = setTimeout(callback, delay);
-    return () => clearTimeout(timeout);
-  }, [callback, delay]);
-}
-
 
 
 /**
