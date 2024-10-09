@@ -1,8 +1,8 @@
 import { v } from "convex/values";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { versions } from "./schema";
+import schema, { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
-import { crud } from "convex-helpers/server";
+import { crud } from "convex-helpers/server/crud";
 import { create as createPost, isSlugTaken } from "./posts";
 
 export const {
@@ -10,7 +10,7 @@ export const {
     read,
     update,
     destroy
-} = crud(versions, query, mutation);
+} = crud(schema, 'versions');
 
 export const saveDraft = mutation({
     args: {

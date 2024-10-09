@@ -1,15 +1,15 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { auth } from "./auth";
-import { users } from "./schema";
-import { crud } from "convex-helpers/server";
+import schema from "./schema";
+import { crud } from "convex-helpers/server/crud";
 
 export const {
   create,
   read,
   update,
   destroy
-} = crud(users, query, mutation);
+} = crud(schema, 'users');
 
 
 export const viewer = query({

@@ -1,9 +1,9 @@
 
 import { query, mutation } from "./_generated/server";
 import { viewer as getViewer } from "./users";
-import { images } from "./schema";
+import schema, { images } from "./schema";
 import { omit } from "convex-helpers";
-import { crud } from "convex-helpers/server";
+import { crud } from "convex-helpers/server/crud";
 import { internal } from "./_generated/api";
 
 export const {
@@ -11,7 +11,7 @@ export const {
     read,
     update,
     destroy
-} = crud(images, query, mutation);
+} = crud(schema, 'images');
 
 
 

@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { posts } from "./schema";
-import { crud } from "convex-helpers/server";
+import schema from "./schema";
+import { crud } from "convex-helpers/server/crud";
 import { viewer as getViewer } from "./users";
 import type { Doc } from "./_generated/dataModel";
 
@@ -10,8 +10,7 @@ export const {
     read,
     update,
     destroy
-} = crud(posts, query, mutation);
-
+} = crud(schema, 'posts');
 
 export const publish = mutation({
     args: {
