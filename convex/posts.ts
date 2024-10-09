@@ -195,7 +195,7 @@ export const getBySlug = query({
 export const isSlugTaken = query({
     args: {
         slug: v.string(),
-        postId: v.optional(v.id('posts'))
+        postId: posts.withoutSystemFields.postId
     },
     handler: async (ctx, args) => {
         const { slug, postId } = args;
