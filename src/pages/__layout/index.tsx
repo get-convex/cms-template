@@ -7,11 +7,12 @@ import { FilePlusIcon } from '@radix-ui/react-icons'
 import { Link, useSearchParams } from 'react-router-dom'
 import { PageTitle } from '@/components/PageTitle'
 import type { FC } from 'react'
+import { useStableQuery } from '@/lib/utils'
 
 const Component: FC = () => {
     const [searchParams, _] = useSearchParams();
     const searchTerm = searchParams.get('s');
-    const searchResults = useQuery(api.posts.searchContent, searchTerm ? { searchTerm } : 'skip')
+    const searchResults = useStableQuery(api.posts.searchContent, searchTerm ? { searchTerm } : 'skip')
     const allPosts = useQuery(api.posts.list);
 
     return (<>
@@ -30,8 +31,8 @@ const Component: FC = () => {
             <PageTitle title="" tagline="A minimalist CMS / Blog open-source template created with Convex, Vite, React and shadcn/ui." />
             <div className="mt-4">
                 {searchTerm
-                    ? searchResults && <PreviewGallery posts={searchResults} />
-                    : allPosts && <PreviewGallery posts={allPosts} />}
+                    ? <PreviewGallery posts={searchResults || []} />
+                    : <PreviewGallery posts={allPosts || []} />}
             </div>
         </div>
     </>);

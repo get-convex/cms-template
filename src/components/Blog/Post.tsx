@@ -80,7 +80,7 @@ export function PostPreview({ post }: { post: PostWithAuthor }) {
 
 
 export function PreviewGallery({ posts }: { posts: Doc<'posts'>[] }) {
-    if (!posts?.length) return <PageTitle title="No posts yet" />
+    if (!posts?.length) return <PageTitle title="No posts found" />
     return (<div>
         {posts?.map((post) => <PostPreview key={post._id} post={post} />)}
     </div>)

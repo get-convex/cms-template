@@ -201,8 +201,18 @@ export const isSlugTaken = query({
 
 export const searchContent = query({
     args: { searchTerm: v.string() },
-    handler: async (ctx, args) => await ctx.db.query('posts')
-        .withSearchIndex('search_content',
-            q => q.search("content", args.searchTerm))
-        .collect()
+    handler: async (ctx, args) => {
+        const results = await ctx.db.query('posts')
+            .withSearchIndex('search_content',
+                q => q.search("content", args.searchTerm))
+            .collect();
+
+        return Promise.all(
+            results.map(async (post) => {
+                // Add the author's details to each post.
+                const author = (await ctx.db.get(post.authorId))!;
+                return { ...post, author };
+            }),
+        )
+    }
 })

@@ -1,5 +1,7 @@
-import { type ClassValue, clsx } from "clsx";
+import { useEffect, useCallback, useRef } from 'react';
+import { useQuery } from "convex/react";
 import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -38,3 +40,43 @@ export function showTimeAgoShort(created: number) {
   const daysAgo = Math.round(hoursAgo / 24)
   return `${daysAgo}d ago`
 }
+
+
+// Debounce user input for e.g. search
+export function useDebounce(effect: any, dependencies: React.DependencyList, delay: number) {
+  const callback = useCallback(effect, dependencies);
+
+  useEffect(() => {
+    const timeout = setTimeout(callback, delay);
+    return () => clearTimeout(timeout);
+  }, [callback, delay]);
+}
+
+
+
+/**
+ * https://github.com/get-convex/convex-helpers/blob/main/src/hooks/useStableQuery.ts
+ * Drop-in replacement for useQuery intended to be used with a parametrized query.
+ * Unlike useQuery, useStableQuery does not return undefined while loading new
+ * data when the query arguments change, but instead will continue to return
+ * the previously loaded data until the new data has finished loading.
+ *
+ * See https://stack.convex.dev/help-my-app-is-overreacting for details.
+ * 
+ * @param name - string naming the query function
+ * @param ...args - arguments to be passed to the query function
+ * @returns UseQueryResult
+ */
+export const useStableQuery = ((name, ...args) => {
+  const result = useQuery(name, ...args);
+  const stored = useRef(result); // ref objects are stable between rerenders
+
+  // result is only undefined while data is loading
+  // if a freshly loaded result is available, use the ref to store it
+  if (result !== undefined) {
+    stored.current = result;
+  }
+
+  // undefined on first load, stale data while loading, fresh data after loading
+  return stored.current;
+}) as typeof useQuery;
