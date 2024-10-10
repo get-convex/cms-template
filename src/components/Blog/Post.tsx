@@ -80,10 +80,13 @@ export function PostPreview({ post }: { post: PostWithAuthor }) {
 
 
 export function PreviewGallery({ posts }: { posts: Doc<'posts'>[] }) {
-    if (!posts?.length) return <PageTitle title="No posts found" />
-    return (<div>
-        {posts?.map((post) => <PostPreview key={post._id} post={post} />)}
-    </div>)
+    if (!posts?.length) {
+        return <h1 className="text-xl font-semibold sm:text-2xl lg:text-4xl py-2">No posts found</h1>
+    } else {
+        return (<div>
+            {posts?.map((post) => <PostPreview key={post._id} post={post} />)}
+        </div>)
+    }
 }
 
 export function DisplayPost({ post }: {
