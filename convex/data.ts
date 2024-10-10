@@ -275,8 +275,11 @@ export const reset = internalMutation({
     await Promise.all(POSTS.map(async (p) => {
       const { authorIndex, ...post } = p;
       const authorId = userIds[authorIndex]
+      const { title, content, summary, slug, } = post;
+      const search = [title, content, summary, slug].join(' ')
+
       const postId = await ctx.db.insert('posts',
-        { ...post, authorId, publishTime: Date.now() }
+        { ...post, authorId, publishTime: Date.now(), search }
       );
       console.log(`Created document ${postId} in "posts" table`);
       const versionId = await ctx.db.insert('versions',
