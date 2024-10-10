@@ -1,7 +1,7 @@
 {
-    "node": {
-        "externalPackages": [
-            "sharp"
-        ]
-    }
+  "node": {
+    "externalPackages": [
+      "sharp"
+    ]
+  }
 }
