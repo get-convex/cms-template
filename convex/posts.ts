@@ -4,7 +4,7 @@ import schema, { posts } from "./schema";
 import { crud } from "convex-helpers/server/crud";
 import { Triggers } from "convex-helpers/server/triggers";
 import { DataModel, type Doc } from "./_generated/dataModel";
-import { customMutation } from "convex-helpers/server/customFunctions";
+import { customMutation, customCtx } from "convex-helpers/server/customFunctions";
 
 
 
@@ -29,7 +29,7 @@ triggers.register("posts", async (ctx, change) => {
     }
 });
 // Wrap the default Convex mutation function to be aware of our trigger
-const mutation = customMutation(rawMutation, triggers.customFunctionWrapper());
+const mutation = customMutation(rawMutation, customCtx(triggers.wrapDB));
 
 
 // Use the trigger-wrapped mutation function to generate CRUD helpers.
