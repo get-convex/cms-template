@@ -21,7 +21,9 @@ export const saveDraft = mutation({
     if (!id) {
       id = await ctx.db.insert("posts", data);
     }
-    return await ctx.db.insert("versions", { ...data, editorId, postId: id });
+    return (await ctx.db.get(
+      await ctx.db.insert("versions", { ...data, editorId, postId: id }),
+    ))!;
   },
 });
 
