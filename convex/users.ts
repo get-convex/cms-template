@@ -2,14 +2,19 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { auth } from "./auth";
 import schema from "./schema";
-import { crud } from "convex-helpers/server/crud";
+import { partial } from "convex-helpers/validators";
 
-export const { create, read, update, destroy } = crud(
-  schema,
-  "users",
-  query,
-  mutation,
-);
+export const update = mutation({
+  args: {
+    id: v.id("users"),
+    patch: v.object(partial(schema.tables.users.validator.fields)),
+  },
+  handler: async (ctx, args) => {
+    const userId = await auth.getUserId(ctx);
+    if (!userId) throw new Error("User not authenticated");
+    await ctx.db.patch(args.id, args.patch);
+  },
+});
 
 export const viewer = query({
   args: {},
@@ -58,7 +63,7 @@ export const byEmail = query({
 export const getOrSetSlug = mutation({
   args: { id: v.id("users") },
   handler: async (ctx, args) => {
-    const user = await read(ctx, { id: args.id });
+    const user = await ctx.db.get(args.id);
     if (user === null) return null;
     if (user.slug) return user.slug;
 
@@ -70,7 +75,7 @@ export const getOrSetSlug = mutation({
     } else {
       slug = user._id;
     }
-    await update(ctx, { id: user._id, patch: { slug } });
+    await ctx.db.patch(user._id, { slug });
     return slug;
   },
 });

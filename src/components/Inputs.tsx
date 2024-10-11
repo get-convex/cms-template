@@ -95,17 +95,17 @@ export function ImageField<Schema extends FieldValues>({ form }: CommonProps<Sch
     const save = useMutation(api.images.saveOptimized);
 
     const [imageId, setImageId] = useState<Id<'images'>>();
-    const image = useQuery(api.images.read, imageId ? { id: imageId } : 'skip');
+    const imageUrl = useQuery(api.images.getUrl, imageId ? { id: imageId } : 'skip');
     const { setValue } = form;
 
     useEffect(() => {
-        if (image?.url) {
+        if (imageUrl) {
             setValue('imageUrl' as FieldPath<Schema>,
-                image.url as FieldValue<Schema>,
+                imageUrl as FieldValue<Schema>,
                 { shouldDirty: true });
         }
 
-    }, [image?.url, setValue]);
+    }, [imageUrl, setValue]);
 
     const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
         const { name, type, size, response } = uploaded[0];

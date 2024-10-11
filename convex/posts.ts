@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import { mutation as rawMutation, query } from "./_generated/server";
-import schema, { posts } from "./schema";
-import { crud } from "convex-helpers/server/crud";
+import schema from "./schema";
 import { Triggers } from "convex-helpers/server/triggers";
 import { DataModel, type Doc } from "./_generated/dataModel";
 import {
@@ -197,7 +196,7 @@ export const getBySlug = query({
 export const isSlugTaken = query({
   args: {
     slug: v.string(),
-    postId: posts.withoutSystemFields.postId,
+    postId: schema.tables.posts.validator.fields.postId,
   },
   handler: async (ctx, args) => {
     const { slug, postId } = args;

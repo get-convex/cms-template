@@ -1,19 +1,29 @@
-
-import { query, mutation } from "./_generated/server";
+import {
+  query,
+  mutation,
+  internalMutation,
+  internalQuery,
+} from "./_generated/server";
 import { viewer as getViewer } from "./users";
 import schema, { images } from "./schema";
 import { omit } from "convex-helpers";
 import { crud } from "convex-helpers/server/crud";
 import { internal } from "./_generated/api";
+import { v } from "convex/values";
 
-export const {
-    create,
-    read,
-    update,
-    destroy
-} = crud(schema, 'images', query, mutation);
+export const { read, update } = crud(
+  schema,
+  "images",
+  internalQuery,
+  internalMutation,
+);
 
-
+export const getUrl = query({
+  args: { id: v.id("images") },
+  handler: async (ctx, args) => {
+    return (await ctx.db.get(args.id))?.url;
+  },
+});
 
 export const generateUploadUrl = mutation({
     args: {},
@@ -36,19 +46,18 @@ export const saveOptimized = mutation({
             throw new Error('User not authenticated; cannot save file')
 
 
-        // Save the original file metadata & storageId to 'images' table
-        const url = await ctx.storage.getUrl(args.storageId);
-        if (!url)
-            throw new Error(`No url found for storageId ${args.storageId}`)
-        const image = await create(ctx, { ...args, url });
+    // Save the original file metadata & storageId to 'images' table
+    const url = await ctx.storage.getUrl(args.storageId);
+    if (!url) throw new Error(`No url found for storageId ${args.storageId}`);
+    const imageId = await ctx.db.insert("images", { ...args, url });
 
-        // Trigger the optimizeAndSave action
-        await ctx.scheduler.runAfter(0, internal.sharp.convertAndUpdate, {
-            imageId: image._id,
-        });
-        return image;
-    }
-})
+    // Trigger the optimizeAndSave action
+    await ctx.scheduler.runAfter(0, internal.sharp.convertAndUpdate, {
+      imageId,
+    });
+    return (await ctx.db.get(imageId))!;
+  },
+});
 
 export const save = mutation({
     args: omit(images.withoutSystemFields, ['url']),
@@ -63,10 +72,10 @@ export const save = mutation({
         if (!url)
             throw new Error(`No url found for storageId ${args.storageId}`)
 
-        // Save the file metadata, url & storageId to 'images' table
-        const doc = await create(ctx, { ...args, url });
-        return doc;
-    }
+    // Save the file metadata, url & storageId to 'images' table
+    const docId = await ctx.db.insert("images", { ...args, url });
+    return (await ctx.db.get(docId))!;
+  },
 });
 
 
