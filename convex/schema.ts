@@ -78,7 +78,7 @@ export const imagesZod = {
 //// Convex DB ////
 export default defineSchema({
   ...authTables,
-  users: defineTable(zodToConvexFields(usersZod)),
+  users: defineTable(zodToConvexFields(usersZod)).index("email", ["email"]),
   posts: defineTable(zodToConvexFields(postsZod))
     .index("by_slug", ["slug"])
     .index("by_published", ["published", "publishTime", "updateTime"])
