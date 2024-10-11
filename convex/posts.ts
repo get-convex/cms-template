@@ -35,15 +35,6 @@ triggers.register("posts", async (ctx, change) => {
 // Wrap the default Convex mutation function to be aware of our trigger
 const mutation = customMutation(rawMutation, customCtx(triggers.wrapDB));
 
-// Use the trigger-wrapped mutation function to generate CRUD helpers.
-// See also: https://stack.convex.dev/crud-and-rest
-export const { create, read, update, destroy } = crud(
-  schema,
-  "posts",
-  query,
-  mutation,
-);
-
 export const publish = mutation({
   args: {
     versionId: v.id("versions"),
@@ -72,7 +63,7 @@ export const publish = mutation({
       updateTime: Date.now(),
     };
     await ctx.db.patch(postId, patch);
-    return read(ctx, { id: postId });
+    return ctx.db.get(postId);
   },
 });
 

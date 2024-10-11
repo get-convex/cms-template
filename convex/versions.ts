@@ -3,7 +3,7 @@ import { mutation, query, type QueryCtx } from "./_generated/server";
 import schema, { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
 import { crud } from "convex-helpers/server/crud";
-import { create as createPost, isSlugTaken } from "./posts";
+import { isSlugTaken } from "./posts";
 
 export const {
     create,
@@ -25,8 +25,7 @@ export const saveDraft = mutation({
 
         let id = postId;
         if (!id) {
-            const newPost = await createPost(ctx, data);
-            id = newPost._id
+            id = await ctx.db.insert("posts", data);
         }
         return await create(ctx, { ...data, editorId, postId: id });
 
