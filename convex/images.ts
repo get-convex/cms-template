@@ -5,7 +5,7 @@ import {
   internalQuery,
 } from "./_generated/server";
 import { viewer as getViewer } from "./users";
-import schema, { images } from "./schema";
+import schema from "./schema";
 import { omit } from "convex-helpers";
 import { crud } from "convex-helpers/server/crud";
 import { internal } from "./_generated/api";
@@ -26,25 +26,25 @@ export const getUrl = query({
 });
 
 export const generateUploadUrl = mutation({
-    args: {},
-    handler: async (ctx) => {
-        // Verify the user is authenticated
-        const viewer = await getViewer(ctx, {});
-        if (!viewer) throw new Error('User not authenticated; cannot generate upload URL')
+  args: {},
+  handler: async (ctx) => {
+    // Verify the user is authenticated
+    const viewer = await getViewer(ctx, {});
+    if (!viewer)
+      throw new Error("User not authenticated; cannot generate upload URL");
 
-        // Return an upload URL
-        return await ctx.storage.generateUploadUrl();
-    },
+    // Return an upload URL
+    return await ctx.storage.generateUploadUrl();
+  },
 });
 
+const imageFields = schema.tables.images.validator.fields;
 export const saveOptimized = mutation({
-    args: omit(images.withoutSystemFields, ['url']),
-    handler: async (ctx, args) => {
-        // Verify the user is still authenticated
-        const viewer = await getViewer(ctx, {});
-        if (!viewer)
-            throw new Error('User not authenticated; cannot save file')
-
+  args: omit(imageFields, ["url"]),
+  handler: async (ctx, args) => {
+    // Verify the user is still authenticated
+    const viewer = await getViewer(ctx, {});
+    if (!viewer) throw new Error("User not authenticated; cannot save file");
 
     // Save the original file metadata & storageId to 'images' table
     const url = await ctx.storage.getUrl(args.storageId);
@@ -60,22 +60,18 @@ export const saveOptimized = mutation({
 });
 
 export const save = mutation({
-    args: omit(images.withoutSystemFields, ['url']),
-    handler: async (ctx, args) => {
-        // Verify the user is still authenticated
-        const viewer = await getViewer(ctx, {});
-        if (!viewer)
-            throw new Error('User not authenticated; cannot save file')
+  args: omit(imageFields, ["url"]),
+  handler: async (ctx, args) => {
+    // Verify the user is still authenticated
+    const viewer = await getViewer(ctx, {});
+    if (!viewer) throw new Error("User not authenticated; cannot save file");
 
-        // Get the URL
-        const url = await ctx.storage.getUrl(args.storageId);
-        if (!url)
-            throw new Error(`No url found for storageId ${args.storageId}`)
+    // Get the URL
+    const url = await ctx.storage.getUrl(args.storageId);
+    if (!url) throw new Error(`No url found for storageId ${args.storageId}`);
 
     // Save the file metadata, url & storageId to 'images' table
     const docId = await ctx.db.insert("images", { ...args, url });
     return (await ctx.db.get(docId))!;
   },
 });
-
-

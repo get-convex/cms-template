@@ -1,12 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query, type QueryCtx } from "./_generated/server";
-import { versions } from "./schema";
 import type { Doc } from "./_generated/dataModel";
 import { isSlugTaken } from "./posts";
+import schema from "./schema";
 
 export const saveDraft = mutation({
   args: {
-    ...versions.withoutSystemFields,
+    ...schema.tables.versions.validator.fields,
     postId: v.optional(v.union(v.literal(""), v.id("posts"))),
   },
   handler: async (ctx, args) => {
