@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef } from "react";
 import { useQuery } from "convex/react";
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
@@ -7,40 +7,38 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-
 // Display creation time relative to current time, e.g. "6 days ago"
 export function showTimeAgo(created: number) {
-  const now = Date.now()
-  const secondsAgo = Math.round((now - created) / 1000)
-  if (secondsAgo < 60) return 'just now'
-  const minutesAgo = Math.round(secondsAgo / 60)
+  const now = Date.now();
+  const secondsAgo = Math.round((now - created) / 1000);
+  if (secondsAgo < 60) return "just now";
+  const minutesAgo = Math.round(secondsAgo / 60);
   if (minutesAgo < 60) {
-    return `${minutesAgo} minute${minutesAgo === 1 ? '' : 's'} ago`
+    return `${minutesAgo} minute${minutesAgo === 1 ? "" : "s"} ago`;
   }
-  const hoursAgo = Math.round(minutesAgo / 60)
+  const hoursAgo = Math.round(minutesAgo / 60);
   if (hoursAgo < 24) {
-    return `${hoursAgo} hour${hoursAgo === 1 ? '' : 's'} ago`
+    return `${hoursAgo} hour${hoursAgo === 1 ? "" : "s"} ago`;
   }
-  const daysAgo = Math.round(hoursAgo / 24)
-  return `${daysAgo} day${daysAgo === 1 ? '' : 's'} ago`
+  const daysAgo = Math.round(hoursAgo / 24);
+  return `${daysAgo} day${daysAgo === 1 ? "" : "s"} ago`;
 }
 
 export function showTimeAgoShort(created: number) {
-  const now = Date.now()
-  const secondsAgo = Math.round((now - created) / 1000)
-  if (secondsAgo < 60) return 'now'
-  const minutesAgo = Math.round(secondsAgo / 60)
+  const now = Date.now();
+  const secondsAgo = Math.round((now - created) / 1000);
+  if (secondsAgo < 60) return "now";
+  const minutesAgo = Math.round(secondsAgo / 60);
   if (minutesAgo < 60) {
-    return `${minutesAgo}m ago`
+    return `${minutesAgo}m ago`;
   }
-  const hoursAgo = Math.round(minutesAgo / 60)
+  const hoursAgo = Math.round(minutesAgo / 60);
   if (hoursAgo < 24) {
-    return `${hoursAgo}h ago`
+    return `${hoursAgo}h ago`;
   }
-  const daysAgo = Math.round(hoursAgo / 24)
-  return `${daysAgo}d ago`
+  const daysAgo = Math.round(hoursAgo / 24);
+  return `${daysAgo}d ago`;
 }
-
 
 /**
  * https://github.com/get-convex/convex-helpers/blob/main/src/hooks/useStableQuery.ts
@@ -50,7 +48,7 @@ export function showTimeAgoShort(created: number) {
  * the previously loaded data until the new data has finished loading.
  *
  * See https://stack.convex.dev/help-my-app-is-overreacting for details.
- * 
+ *
  * @param name - string naming the query function
  * @param ...args - arguments to be passed to the query function
  * @returns UseQueryResult

@@ -2,12 +2,7 @@ import { internalMutation } from "./_generated/server";
 import type { Id, TableNames } from "./_generated/dataModel";
 import { byEmail, getOrSetSlug } from "./users";
 
-
-const USERS = [
-  "ian@convex.dev",
-  "wayne@convex.dev",
-  "contact@anjana.dev",
-];
+const USERS = ["ian@convex.dev", "wayne@convex.dev", "contact@anjana.dev"];
 const POSTS = [
   {
     authorIndex: 1,
@@ -26,11 +21,12 @@ const POSTS = [
   },
   {
     authorIndex: 0,
-    "title": "Introducing Convex Auth",
-    "slug": "introducing-convex-auth",
-    "summary": "Convex Auth is a library for implementing authentication natively in your Convex backend.",
-    "published": true,
-    "content": ` "Convex Auth is a library for implementing authentication using your Convex backend.
+    title: "Introducing Convex Auth",
+    slug: "introducing-convex-auth",
+    summary:
+      "Convex Auth is a library for implementing authentication natively in your Convex backend.",
+    published: true,
+    content: ` "Convex Auth is a library for implementing authentication using your Convex backend.
 
 Check it out [in the Convex docs
 ](https: //docs.convex.dev/auth/convex-auth) to get started or play with the [example demo](https://labs.convex.dev/auth-example) ([source](https://github.com/get-convex/convex-auth-example)).
@@ -206,7 +202,8 @@ export const send = mutation({
 
 And that’s all it takes to get self-hosted auth to work. From here I recommend you read through the [docs
 ](https: //labs.convex.dev/auth). They go into detail on how to implement the various authentication methods and on the trade-offs between them. I hope you’ll find the library useful. Please let us know what you think on our [discord](https://arc.net/l/quote/dxljwnkc)."
-`},
+`,
+  },
   {
     authorIndex: 1,
     content: `A team of full-stack developers, comprised of Alex, Priya, and Mateo, were always on the lookout for new tools and technologies that could push the boundaries of their projects. When they heard about the Convex “Zero to One” hackathon, they decided to join, eager to explore what this new backend platform could offer.
@@ -240,54 +237,64 @@ With Convex.dev, they were confident they could scale their startup quickly and 
     summary:
       "Two full-stack developers, Emily and Jason, were deep into building their startup, an innovative platform aimed at simplifying online event management. ",
     title: "Discovering Convex.dev",
-  }
+  },
 ];
-
 
 export const clearPosts = internalMutation({
   args: {},
   handler: async (ctx) => {
-    await Promise.all(["posts", "versions"].map(async (table) => {
-      const oldData = await ctx.db.query(table as TableNames).collect();
-      await Promise.all(oldData.map(async ({ _id }) => {
-        await ctx.db.delete(_id);
-      }));
-      console.log(`Deleted ${oldData.length} documents from "${table}" table`)
-    }));
-  }
+    await Promise.all(
+      ["posts", "versions"].map(async (table) => {
+        const oldData = await ctx.db.query(table as TableNames).collect();
+        await Promise.all(
+          oldData.map(async ({ _id }) => {
+            await ctx.db.delete(_id);
+          }),
+        );
+        console.log(
+          `Deleted ${oldData.length} documents from "${table}" table`,
+        );
+      }),
+    );
+  },
 });
-
 
 export const reset = internalMutation({
   args: {},
   handler: async (ctx) => {
     await clearPosts(ctx, {});
-    const userIds: Id<'users'>[] = await Promise.all(
+    const userIds: Id<"users">[] = await Promise.all(
       USERS.map(async (email) => {
-        const user = await (byEmail(ctx, { email }));
-        if (!user) throw new Error('user not found ' + email);
+        const user = await byEmail(ctx, { email });
+        if (!user) throw new Error("user not found " + email);
         console.log(`Found ${user._id} in "users" table`);
         const slug = await getOrSetSlug(ctx, { id: user._id });
         console.log(`Author slug: ${slug}`);
         return user._id;
-      })
+      }),
     );
-    await Promise.all(POSTS.map(async (p) => {
-      const { authorIndex, ...post } = p;
-      const authorId = userIds[authorIndex]
-      const { title, content, summary, slug, } = post;
-      const search = [title, content, summary, slug].join(' ')
+    await Promise.all(
+      POSTS.map(async (p) => {
+        const { authorIndex, ...post } = p;
+        const authorId = userIds[authorIndex];
+        const { title, content, summary, slug } = post;
+        const search = [title, content, summary, slug].join(" ");
 
-      const postId = await ctx.db.insert('posts',
-        { ...post, authorId, publishTime: Date.now(), search }
-      );
-      console.log(`Created document ${postId} in "posts" table`);
-      const versionId = await ctx.db.insert('versions',
-        { ...post, postId, authorId, editorId: authorId }
-      );
-      console.log(`Created document ${versionId} in "versions" table`)
-
-    }));
-
-  }
+        const postId = await ctx.db.insert("posts", {
+          ...post,
+          authorId,
+          publishTime: Date.now(),
+          search,
+        });
+        console.log(`Created document ${postId} in "posts" table`);
+        const versionId = await ctx.db.insert("versions", {
+          ...post,
+          postId,
+          authorId,
+          editorId: authorId,
+        });
+        console.log(`Created document ${versionId} in "versions" table`);
+      }),
+    );
+  },
 });

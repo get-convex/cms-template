@@ -44,7 +44,8 @@ export function GetStartedContent() {
   return (
     <div className="">
       <p className="text-foreground py-2">
-        This template is a starting point for building your content-driven fullstack web application.
+        This template is a starting point for building your content-driven
+        fullstack web application.
       </p>
       <p className="text-foreground italic py-4">
         To prevent abuse, the content in the public demo app hosted at{" "}
@@ -60,9 +61,11 @@ export function GetStartedContent() {
           href="https://docs.convex.dev/scheduling/cron-jobs"
           className="underline underline-offset-4 hover:no-underline"
           target="_blank"
-        >cron job</a>
-        {" "}defined in <Code>convex/crons.ts</Code>. You can edit & create new posts, but your changes will be deleted within 24 hours.
-
+        >
+          cron job
+        </a>{" "}
+        defined in <Code>convex/crons.ts</Code>. You can edit & create new
+        posts, but your changes will be deleted within 24 hours.
       </p>
       <h2 className="mt-6 mb-3 font-semibold">Explore the code</h2>
       <div className="grid gap-4 md:grid-cols-3 mb-4">
@@ -80,8 +83,8 @@ export function GetStartedContent() {
               target="_blank"
             >
               Convex dashboard
-            </a>
-            {" "}in another window.
+            </a>{" "}
+            in another window.
           </CardContent>
         </Card>
         <Card>
@@ -92,7 +95,8 @@ export function GetStartedContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            Edit the functions in the <Code>convex/</Code> directory to change the backend functionality.
+            Edit the functions in the <Code>convex/</Code> directory to change
+            the backend functionality.
           </CardContent>
         </Card>
         <Card>
@@ -103,7 +107,8 @@ export function GetStartedContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            Edit <Code>src/components</Code> and <Code>src/pages</Code> to change your frontend.
+            Edit <Code>src/components</Code> and <Code>src/pages</Code> to
+            change your frontend.
           </CardContent>
         </Card>
       </div>

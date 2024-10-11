@@ -1,12 +1,12 @@
-import { cronJobs } from 'convex/server'
-import { internal } from './_generated/api'
+import { cronJobs } from "convex/server";
+import { internal } from "./_generated/api";
 
-const crons = cronJobs()
+const crons = cronJobs();
 
 crons.daily(
-    'Reset all tables to initial dataset',
-    { hourUTC: 7, minuteUTC: 0 },
-    internal.data.reset
-)
+  "Reset all tables to initial dataset",
+  { hourUTC: 7, minuteUTC: 0 },
+  internal.data.reset,
+);
 
-export default crons
+export default crons;
