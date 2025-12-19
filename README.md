@@ -5,7 +5,7 @@ This is a template for using [Convex](https://docs.convex.dev/) with React and [
 ## Setting up
 
 ```
-npx create-convex@latest  -t react-vite-convexauth-shadcn
+npx create-convex@latest -t react-vite-convexauth-shadcn
 ```
 
 Navigate to the new directory and run:
